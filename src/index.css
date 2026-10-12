@@ -79,9 +79,7 @@ html, body {
   opacity: var(--mandala-accent-opacity);
 }
 
-img[src*="mandala_gold.png"],
-img[src*="left.png"],
-img[src*="right.png"] {
+img[src*="mandala_gold.png"] {
   filter: sepia(0.8) saturate(1.25) hue-rotate(335deg) brightness(0.72) contrast(1.08);
 }
 
@@ -196,9 +194,7 @@ img[src*="right.png"] {
 }
 
 @media (max-width: 768px) {
-  img[src*="mandala_gold.png"],
-  img[src*="left.png"],
-  img[src*="right.png"] {
+  img[src*="mandala_gold.png"] {
     filter: sepia(0.65) saturate(1.15) hue-rotate(335deg) brightness(0.78);
   }
 
