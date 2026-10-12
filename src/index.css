@@ -8,24 +8,24 @@
   --font-montserrat: "Montserrat", sans-serif;
   --font-playball: "Playball", cursive;
 
-  --color-sage: #8bbbe0;
-  --color-paper: #ffffff;
+  --color-sage: #8a8064;
+  --color-paper: #fbf3e8;
 
-  --color-theme-50: #f0f7fb;
-  --color-theme-100: #e3f0f9;
-  --color-theme-200: #cce3f4;
-  --color-theme-300: #add1eb;
-  --color-theme-400: #8bbbe0;
-  --color-theme-500: #71a3d3;
-  --color-theme-600: #5785ba;
-  --color-theme-700: #486a9a;
-  --color-theme-800: #3e587e;
-  --color-theme-900: #354a67;
+  --color-theme-50: #fdf8f0;
+  --color-theme-100: #f4e8d8;
+  --color-theme-200: #e8cfad;
+  --color-theme-300: #d5af78;
+  --color-theme-400: #b88745;
+  --color-theme-500: #99622f;
+  --color-theme-600: #7d4433;
+  --color-theme-700: #6a2d30;
+  --color-theme-800: #54212a;
+  --color-theme-900: #35151d;
 }
 
 :root {
   background-color: var(--color-paper);
-  color: #2D2D2D;
+  color: #3a2724;
   font-family: var(--font-montserrat);
 }
 
@@ -82,7 +82,7 @@ html, body {
 img[src*="mandala_gold.png"],
 img[src*="left.png"],
 img[src*="right.png"] {
-  filter: sepia(1) saturate(2) hue-rotate(180deg) brightness(0.6) contrast(1.15);
+  filter: sepia(0.8) saturate(1.25) hue-rotate(335deg) brightness(0.72) contrast(1.08);
 }
 
 .mandala-corner.is-soft {
@@ -122,9 +122,9 @@ img[src*="right.png"] {
 
 .website-shell {
   background:
-    radial-gradient(circle at 18% 14%, rgba(113, 163, 211, 0.19), transparent 38%),
-    radial-gradient(circle at 84% 72%, rgba(139, 187, 224, 0.16), transparent 42%),
-    linear-gradient(180deg, #ffffff 0%, #f7fafd 42%, #ffffff 100%);
+    radial-gradient(circle at 18% 14%, rgba(184, 135, 69, 0.14), transparent 38%),
+    radial-gradient(circle at 84% 72%, rgba(125, 68, 51, 0.10), transparent 42%),
+    linear-gradient(180deg, #fffaf3 0%, #f8eee1 42%, #fffaf3 100%);
 }
 
 .section-floral-overlay {
@@ -136,23 +136,23 @@ img[src*="right.png"] {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 25%, rgba(113, 163, 211, 0.16), transparent 35%),
-    radial-gradient(circle at 78% 75%, rgba(173, 209, 235, 0.14), transparent 38%);
+    radial-gradient(circle at 20% 25%, rgba(184, 135, 69, 0.13), transparent 35%),
+    radial-gradient(circle at 78% 75%, rgba(125, 68, 51, 0.10), transparent 38%);
 }
 
 .paper-grain {
   background-image:
     radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.85) 0.5px, transparent 0.8px),
-    radial-gradient(circle at 78% 42%, rgba(173, 209, 235, 0.2) 0.6px, transparent 0.9px),
-    radial-gradient(circle at 42% 76%, rgba(113, 163, 211, 0.1) 0.5px, transparent 0.8px);
+    radial-gradient(circle at 78% 42%, rgba(213, 175, 120, 0.2) 0.6px, transparent 0.9px),
+    radial-gradient(circle at 42% 76%, rgba(125, 68, 51, 0.1) 0.5px, transparent 0.8px);
   background-size: 9px 9px, 15px 15px, 18px 18px;
 }
 
 .paper-grain-strong {
   background-image:
     radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.88) 0.55px, transparent 0.85px),
-    radial-gradient(circle at 70% 64%, rgba(139, 187, 224, 0.22) 0.65px, transparent 0.95px),
-    linear-gradient(180deg, rgba(240, 247, 251, 0.75), rgba(227, 240, 249, 0.8));
+    radial-gradient(circle at 70% 64%, rgba(184, 135, 69, 0.22) 0.65px, transparent 0.95px),
+    linear-gradient(180deg, rgba(253, 248, 240, 0.75), rgba(244, 232, 216, 0.8));
   background-size: 8px 8px, 14px 14px, 100% 100%;
 }
 
@@ -199,7 +199,7 @@ img[src*="right.png"] {
   img[src*="mandala_gold.png"],
   img[src*="left.png"],
   img[src*="right.png"] {
-    filter: sepia(0.35) saturate(1.4) hue-rotate(180deg) brightness(0.75);
+    filter: sepia(0.65) saturate(1.15) hue-rotate(335deg) brightness(0.78);
   }
 
   .mobile-lite [class*="backdrop-blur"] {

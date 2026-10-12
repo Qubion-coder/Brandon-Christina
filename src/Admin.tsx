@@ -36,7 +36,7 @@ export default function Admin() {
     const finalUrl = `${window.location.origin}/${encodeURIComponent(displayName)}`;
     setGeneratedLink(finalUrl);
 
-    const message = `Dear ${displayName} ❤️\n\nWith joyful hearts, we warmly invite you to celebrate one of the most special days of our lives as we begin our journey together.\n\nPlease view our wedding invitation and all the event details through the link below 🌐:\n\n${finalUrl}\n\nYour presence would truly mean the world to us, and we would be honored to celebrate this beautiful moment together.\n\nWith love,\n❤️ Nisitha & Sandewni`;
+    const message = `Dear ${displayName} ❤️\n\nMr. & Mrs. Wijerathna request the honour of your presence to celebrate the wedding of their children, Sachith & Dasuni.\n\nFriday, 27 November 2026\n08:30 AM to 04:00 PM\nPoruwa Ceremony at 10:07 AM\nHotel Grand Palace Hikkaduwa\n\nPlease view our wedding invitation and all the event details through the link below 🌐:\n\n${finalUrl}\n\nWith love,\n❤️ Sachith & Dasuni`;
     
     setGeneratedMessage(message);
     setCopiedLink(false);
@@ -56,14 +56,14 @@ export default function Admin() {
   };
 
   return (
-    <div className="h-[100dvh] overflow-y-auto w-full bg-[#fdfaf5] p-6 font-montserrat flex justify-center items-start pt-20">
+    <div className="h-[100dvh] overflow-y-auto w-full bg-[#fbf3e8] p-6 font-montserrat flex justify-center items-start pt-20">
       <div className="max-w-2xl w-full mx-auto bg-white p-8 rounded-3xl shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] border border-theme-100/60 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.02] bg-[url('/images/paper-texture.png')] pointer-events-none" />
         
         <div className="relative z-10 space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl md:text-4xl font-playball text-theme-800">Wedding Link Generator</h1>
-            <p className="text-xs uppercase tracking-[0.3em] font-bold text-stone-400">Personalized Invitations</p>
+            <h1 className="text-3xl md:text-4xl font-playball text-theme-800">Sachith & Dasuni</h1>
+            <p className="text-xs uppercase tracking-[0.3em] font-bold text-stone-400">Wedding Link Generator</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
