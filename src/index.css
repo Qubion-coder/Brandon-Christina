@@ -8,24 +8,28 @@
   --font-montserrat: "Montserrat", sans-serif;
   --font-playball: "Playball", cursive;
 
-  --color-sage: #8a8064;
-  --color-paper: #fbf3e8;
+  --color-sage: #c27486;
+  --color-paper: #ffffff;
 
-  --color-theme-50: #fdf8f0;
-  --color-theme-100: #f4e8d8;
-  --color-theme-200: #e8cfad;
-  --color-theme-300: #d5af78;
-  --color-theme-400: #b88745;
-  --color-theme-500: #99622f;
-  --color-theme-600: #7d4433;
-  --color-theme-700: #6a2d30;
-  --color-theme-800: #54212a;
-  --color-theme-900: #35151d;
+  --color-theme-50: #fdf7f8;
+  --color-theme-100: #f8eaed;
+  --color-theme-200: #edcdd4;
+  --color-theme-300: #dca5b1;
+  --color-theme-400: #c27486;
+  --color-theme-500: #a3475c;
+  --color-theme-600: #8a2c43;
+  --color-theme-700: #722036;
+  --color-theme-800: #5c1a2b;
+  --color-theme-900: #3e101c;
+
+  --color-navy-700: #2a3d66;
+  --color-navy-800: #1b2a4a;
+  --color-navy-900: #121d36;
 }
 
 :root {
   background-color: var(--color-paper);
-  color: #3a2724;
+  color: #1b2a4a;
   font-family: var(--font-montserrat);
 }
 
@@ -120,9 +124,9 @@ img[src*="mandala_gold.png"] {
 
 .website-shell {
   background:
-    radial-gradient(circle at 18% 14%, rgba(184, 135, 69, 0.14), transparent 38%),
-    radial-gradient(circle at 84% 72%, rgba(125, 68, 51, 0.10), transparent 42%),
-    linear-gradient(180deg, #fffaf3 0%, #f8eee1 42%, #fffaf3 100%);
+    radial-gradient(circle at 18% 14%, rgba(138, 44, 67, 0.05), transparent 38%),
+    radial-gradient(circle at 84% 72%, rgba(27, 42, 74, 0.04), transparent 42%),
+    linear-gradient(180deg, #ffffff 0%, #fbf8f9 42%, #ffffff 100%);
 }
 
 .section-floral-overlay {
@@ -135,23 +139,23 @@ img[src*="mandala_gold.png"] {
   inset: 0;
   opacity: 0.6;
   background:
-    radial-gradient(circle at 20% 25%, rgba(184, 135, 69, 0.13), transparent 35%),
-    radial-gradient(circle at 78% 75%, rgba(125, 68, 51, 0.10), transparent 38%);
+    radial-gradient(circle at 20% 25%, rgba(138, 44, 67, 0.05), transparent 35%),
+    radial-gradient(circle at 78% 75%, rgba(27, 42, 74, 0.04), transparent 38%);
 }
 
 .paper-grain {
   background-image:
     radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.85) 0.5px, transparent 0.8px),
-    radial-gradient(circle at 78% 42%, rgba(213, 175, 120, 0.2) 0.6px, transparent 0.9px),
-    radial-gradient(circle at 42% 76%, rgba(125, 68, 51, 0.1) 0.5px, transparent 0.8px);
+    radial-gradient(circle at 78% 42%, rgba(220, 165, 177, 0.2) 0.6px, transparent 0.9px),
+    radial-gradient(circle at 42% 76%, rgba(27, 42, 74, 0.08) 0.5px, transparent 0.8px);
   background-size: 9px 9px, 15px 15px, 18px 18px;
 }
 
 .paper-grain-strong {
   background-image:
     radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.88) 0.55px, transparent 0.85px),
-    radial-gradient(circle at 70% 64%, rgba(184, 135, 69, 0.22) 0.65px, transparent 0.95px),
-    linear-gradient(180deg, rgba(253, 248, 240, 0.75), rgba(244, 232, 216, 0.8));
+    radial-gradient(circle at 70% 64%, rgba(194, 116, 134, 0.22) 0.65px, transparent 0.95px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(248, 234, 237, 0.8));
   background-size: 8px 8px, 14px 14px, 100% 100%;
 }
 
@@ -258,6 +262,38 @@ img[src*="mandala_gold.png"] {
 
   .section-floral-overlay {
     opacity: 0.6;
+  }
+}
+
+/* Envelope opening screen */
+@keyframes envelope-petal-fall {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(30px, 120vh, 0) rotate(240deg); }
+}
+
+@keyframes envelope-twinkle {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+.envelope-petal {
+  animation: envelope-petal-fall linear infinite;
+  will-change: transform;
+}
+
+.envelope-sparkle {
+  animation: envelope-twinkle 3.5s ease-in-out infinite;
+}
+
+.envelope-hint {
+  animation: envelope-twinkle 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope-petal,
+  .envelope-sparkle,
+  .envelope-hint {
+    animation: none;
   }
 }
 

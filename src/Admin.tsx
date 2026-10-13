@@ -36,7 +36,7 @@ export default function Admin() {
     const finalUrl = `${window.location.origin}/${encodeURIComponent(displayName)}`;
     setGeneratedLink(finalUrl);
 
-    const message = `Dear ${displayName} ❤️\n\nWith joyful hearts, we warmly invite you to celebrate one of the most special days of our lives as we begin our journey together.\n\nPlease view our wedding invitation and all the event details through the link below 🌐:\n\n${finalUrl}\n\nYour presence would truly mean the world to us, and we would be honored to celebrate this beautiful moment together.\n\nWith love,\n❤️ Sachith & Dasuni`;
+    const message = `Dear ${displayName} ❤️\n\nWith joyful hearts, we warmly invite you to celebrate one of the most special days of our lives as we begin our journey together.\n\nPlease view our wedding invitation and all the event details through the link below 🌐:\n\n${finalUrl}\n\nYour presence would truly mean the world to us, and we would be honored to celebrate this beautiful moment together.\n\nWith love,\n❤️ Brandon & Christina`;
     
     setGeneratedMessage(message);
     setCopiedLink(false);
@@ -56,13 +56,13 @@ export default function Admin() {
   };
 
   return (
-    <div className="h-[100dvh] overflow-y-auto w-full bg-[#fbf3e8] p-6 font-montserrat flex justify-center items-start pt-20">
+    <div className="h-[100dvh] overflow-y-auto w-full bg-[#ffffff] p-6 font-montserrat flex justify-center items-start pt-20">
       <div className="max-w-2xl w-full mx-auto bg-white p-8 rounded-3xl shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] border border-theme-100/60 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.02] bg-[url('/images/paper-texture.png')] pointer-events-none" />
         
         <div className="relative z-10 space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl md:text-4xl font-playball text-theme-800">Sachith & Dasuni</h1>
+            <h1 className="text-3xl md:text-4xl font-playball text-theme-800">Brandon & Christina</h1>
             <p className="text-xs uppercase tracking-[0.3em] font-bold text-stone-400">Wedding Link Generator</p>
           </div>
           
@@ -101,7 +101,7 @@ export default function Admin() {
           <div className="pt-2 flex justify-center">
             <button 
               onClick={generate}
-              className="w-full bg-theme-800 text-white px-8 py-5 rounded-2xl font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group inline-flex items-center justify-center gap-4"
+              className="w-full bg-navy-800 text-white px-8 py-5 rounded-2xl font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-navy-900 hover:shadow-xl hover:shadow-navy-900/20 transition-all duration-300 group inline-flex items-center justify-center gap-4"
             >
               <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover:scale-150 transition-transform" />
               Generate Link
