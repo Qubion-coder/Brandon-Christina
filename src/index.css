@@ -126,13 +126,14 @@ img[src*="mandala_gold.png"] {
 }
 
 .section-floral-overlay {
-  opacity: 0.6;
+  opacity: 1;
 }
 
 .section-floral-overlay::before {
   content: "";
   position: absolute;
   inset: 0;
+  opacity: 0.6;
   background:
     radial-gradient(circle at 20% 25%, rgba(184, 135, 69, 0.13), transparent 35%),
     radial-gradient(circle at 78% 75%, rgba(125, 68, 51, 0.10), transparent 38%);

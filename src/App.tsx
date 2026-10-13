@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, type TargetAndTransition } from "framer-motion";
-import { Sparkles, MapPin, Calendar, Clock } from "lucide-react";
+import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX } from "lucide-react";
 
 /**
  * Premium Sri Lankan Wedding Invitation Theme
@@ -42,7 +42,7 @@ const safeViewport = {
 
 
 const mandalaImage = "/images/mandala_gold.png";
-const brideGroomImage = "/pre/WhatsApp%20Image%202026-10-13%20at%2002.43.29.jpeg";
+const brideGroomImage = "/pre/WhatsApp%20Image%202026-10-13%20at%2002.43.30.jpeg";
 const galleryImages = [
   "WhatsApp Image 2026-10-13 at 02.43.35.jpeg",
   "WhatsApp Image 2026-10-13 at 02.43.32.jpeg",
@@ -308,6 +308,8 @@ function CountdownTimer() {
 }
 
 export default function WeddingInvitation({ guestName }: { guestName?: string | null }) {
+  const backgroundMusicRef = useRef<HTMLAudioElement>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(() =>
     typeof window !== "undefined" ? detectLiteExperience() : false,
   );
@@ -422,10 +424,60 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
     };
   }, []);
 
+  useEffect(() => {
+    const audio = backgroundMusicRef.current;
+    if (!audio) return;
+
+    const startMusic = () => {
+      void audio.play().then(() => setIsMusicPlaying(true)).catch(() => {
+        // Browsers may block autoplay until the visitor interacts with the page.
+      });
+    };
+
+    startMusic();
+    window.addEventListener("pointerdown", startMusic, { once: true });
+    window.addEventListener("keydown", startMusic, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", startMusic);
+      window.removeEventListener("keydown", startMusic);
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    const audio = backgroundMusicRef.current;
+    if (!audio) return;
+
+    if (audio.paused) {
+      void audio.play().then(() => setIsMusicPlaying(true)).catch(() => {
+        setIsMusicPlaying(false);
+      });
+    } else {
+      audio.pause();
+      setIsMusicPlaying(false);
+    }
+  };
+
   return (
     <main
       className={`h-[100dvh] w-full bg-[#fbf3e8] overflow-y-auto overflow-x-hidden relative font-montserrat smooth-mobile-scroll ${preferLiteExperience ? "mobile-lite ios-scroll-stable" : "scroll-smooth"}`}
     >
+      <audio
+        ref={backgroundMusicRef}
+        src="/Christina_Perri_-_Thousand_years_(mp3.pm)%20(7).mp3"
+        loop
+        preload="auto"
+        aria-label="Background music"
+      />
+      <button
+        type="button"
+        onClick={toggleMusic}
+        aria-label={isMusicPlaying ? "Turn music off" : "Turn music on"}
+        aria-pressed={isMusicPlaying}
+        className="fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-theme-200 bg-white/90 text-theme-800 shadow-lg backdrop-blur-sm transition hover:bg-white hover:scale-105"
+      >
+        {isMusicPlaying ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+      </button>
       <FloatingPetals disabled={isLowPerformanceMode} />
 
       <motion.div
@@ -517,16 +569,20 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             {/* Wedding Details Section */}
             <section className="cv-auto py-24 md:py-32 w-full flex flex-col items-center px-4 relative">
               <div className="section-floral-overlay absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
-                {/* Top-left: left.png on mobile, mandala on desktop */}
-                <InviteImage src="/images/left.png" className="block md:hidden absolute -left-4 -top-4 w-[200px] h-auto opacity-80 object-contain" alt="" loading="eager" />
-                <InviteImage src={mandalaImage} className="hidden md:block absolute -left-10 top-8 w-[460px] h-auto mix-blend-multiply opacity-55 -rotate-[8deg]" alt="" />
+                {/* Top-left: mandala on desktop */}
+                <InviteImage src={mandalaImage} className="hidden md:block absolute -left-10 top-8 w-[460px] h-auto mix-blend-multiply opacity-[.33] -rotate-[8deg]" alt="" />
                 {/* Top-right: mandala on desktop only */}
-                <InviteImage src={mandalaImage} className="hidden md:block absolute -right-10 top-2 w-[430px] h-auto mix-blend-multiply opacity-50 rotate-[12deg]" alt="" />
+                <InviteImage src={mandalaImage} className="hidden md:block absolute -right-10 top-2 w-[430px] h-auto mix-blend-multiply opacity-30 rotate-[12deg]" alt="" />
                 {/* Bottom-left: mandala on desktop only */}
-                <InviteImage src={mandalaImage} className="hidden md:block absolute -left-6 bottom-8 w-[420px] h-auto mix-blend-multiply opacity-40 rotate-[180deg]" alt="" />
-                {/* Bottom-right: right.png on mobile, mandala on desktop */}
-                <InviteImage src="/images/right.png" className="block md:hidden absolute -right-4 bottom-0 w-[200px] h-auto opacity-80 object-contain" alt="" loading="eager" />
-                <InviteImage src={mandalaImage} className="hidden md:block absolute -right-8 bottom-14 w-[470px] h-auto mix-blend-multiply opacity-45 -rotate-[170deg]" alt="" />
+                <InviteImage src={mandalaImage} className="hidden md:block absolute -left-6 bottom-8 w-[420px] h-auto mix-blend-multiply opacity-24 rotate-[180deg]" alt="" />
+                {/* Bottom-right: mandala on desktop */}
+                <InviteImage src={mandalaImage} className="hidden md:block absolute -right-8 bottom-14 w-[470px] h-auto mix-blend-multiply opacity-[.27] -rotate-[170deg]" alt="" />
+              </div>
+
+              {/* left.png / right.png on mobile: kept outside the dimmed overlay so they show in their original colors */}
+              <div className="md:hidden absolute inset-0 pointer-events-none overflow-hidden z-0">
+                <img src="/images/left.png" className="absolute -left-4 -top-4 w-[200px] h-auto object-contain" alt="" />
+                <img src="/images/right.png" className="absolute -right-4 bottom-0 w-[200px] h-auto object-contain" alt="" />
               </div>
 
               <div className="max-w-[1000px] w-full flex flex-col items-center text-center relative z-10">
@@ -679,7 +735,10 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             </section>
 
             {/* Countdown Section */}
-            <section className="cv-auto py-24 md:py-36 bg-[#f8eee1] relative border-y border-theme-100/30 flex flex-col items-center overflow-hidden">
+            <section
+              className="cv-auto py-24 md:py-36 bg-[#f8eee1] bg-cover bg-center relative border-y border-theme-100/30 flex flex-col items-center overflow-hidden"
+              style={{ backgroundImage: 'url("/Vintage Floral Countdown Frame.png")' }}
+            >
               {/* Premium Background Elements */}
               <div className="absolute inset-0 opacity-[0.03] paper-grain pointer-events-none" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[800px] aspect-square bg-theme-100 blur-[120px] rounded-full opacity-30 pointer-events-none decorative-blur hidden md:block" />
@@ -722,6 +781,20 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
               {/* Decorative Background */}
               <div className="absolute inset-0 opacity-5 paper-grain pointer-events-none" />
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-theme-200 blur-[150px] rounded-full opacity-20 pointer-events-none decorative-blur hidden md:block" />
+              <InviteImage
+                src="/mi.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 w-32 md:w-44 h-auto object-contain pointer-events-none z-0"
+                loading="eager"
+              />
+              <InviteImage
+                src="/mi.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 w-32 md:w-44 h-auto object-contain pointer-events-none z-0"
+                loading="lazy"
+              />
 
               <div className="container mx-auto px-6 max-w-6xl relative z-10">
                 <div className="grid md:grid-cols-2 gap-16 md:gap-24 items-center">
@@ -796,7 +869,10 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             </section>
 
             {/* Gallery Section */}
-            <section className="cv-auto py-24 md:py-36 bg-[#f8eee1] relative overflow-hidden flex flex-col items-center">
+            <section
+              className="cv-auto py-24 md:py-36 bg-[#f8eee1] bg-cover bg-center relative overflow-hidden flex flex-col items-center"
+              style={{ backgroundImage: 'url("/Romantic Pastel Floral Invitation Frame.png")' }}
+            >
               <div className="absolute inset-0 opacity-[0.03] paper-grain pointer-events-none" />
               
               <motion.div
@@ -971,9 +1047,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
               <div className="absolute inset-0 opacity-[0.03] paper-grain pointer-events-none" />
 
               <section className="cv-auto py-24 md:py-36 relative flex flex-col items-center overflow-hidden">
-                <InviteImage src={mandalaImage} alt="" className="absolute top-0 right-0 w-[40vw] max-w-[500px] opacity-[0.04] mix-blend-multiply translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-
-
+                <InviteImage src="/images/left - Copy.png" alt="" className="absolute -right-2 top-2 w-[160px] md:w-[220px] h-auto opacity-100 object-contain pointer-events-none z-20" loading="eager" />
                 <div className="container mx-auto px-4 max-w-4xl text-center relative z-10 w-full">
                   <motion.div
                     initial={scrollInit({ opacity: 0, scale: 0.95 })}
