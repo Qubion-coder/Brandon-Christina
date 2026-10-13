@@ -36,7 +36,7 @@ export default function Admin() {
     const finalUrl = `${window.location.origin}/${encodeURIComponent(displayName)}`;
     setGeneratedLink(finalUrl);
 
-    const message = `Dear ${displayName} ❤️\n\nMr. & Mrs. Wijerathna request the honour of your presence to celebrate the wedding of their children, Sachith & Dasuni.\n\nFriday, 27 November 2026\n08:30 AM to 04:00 PM\nPoruwa Ceremony at 10:07 AM\nHotel Grand Palace Hikkaduwa\n\nPlease view our wedding invitation and all the event details through the link below 🌐:\n\n${finalUrl}\n\nWith love,\n❤️ Sachith & Dasuni`;
+    const message = `Dear ${displayName} ❤️\n\nWith joyful hearts, we warmly invite you to celebrate one of the most special days of our lives as we begin our journey together.\n\nPlease view our wedding invitation and all the event details through the link below 🌐:\n\n${finalUrl}\n\nYour presence would truly mean the world to us, and we would be honored to celebrate this beautiful moment together.\n\nWith love,\n❤️ Sachith & Dasuni`;
     
     setGeneratedMessage(message);
     setCopiedLink(false);
