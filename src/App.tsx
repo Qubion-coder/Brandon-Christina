@@ -327,7 +327,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
   const [wishStatus, setWishStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
   const submitToGoogleSheets = async (sheetName: string, data: Record<string, string>) => {
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbyW4ypTPwwTZfGqI81elAehylri93VTLSFYligObteiEukdpYYFqiqW0BdlBlTSG75vpw/exec";
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbx8ro4tM7vnfgToXU-4ye4HiuEB_WYrxFJQaMAC4WCNkHsRlLqVRdAybbeDvC8OPrIUVg/exec";
     
     if (!scriptUrl) {
       console.warn("VITE_GOOGLE_SCRIPT_URL is missing. Simulating success.");
