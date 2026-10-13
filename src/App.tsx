@@ -618,12 +618,12 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   className="relative mb-10 md:mb-14"
                 >
                   <div className="absolute -inset-3 md:-inset-4 rounded-[2rem] bg-theme-200/35 blur-xl decorative-blur hidden md:block" />
-                  <div className="relative bg-white/90 p-2.5 md:p-3 rounded-[2rem] border border-theme-200 shadow-[0_20px_50px_-20px_rgba(53,74,103,0.45)]">
+                  <div className="relative w-full max-w-[280px] md:max-w-[320px] bg-white/90 p-2.5 md:p-3 rounded-[2rem] border border-theme-200 shadow-[0_20px_50px_-20px_rgba(53,74,103,0.45)]">
                     <InviteImage
                       src={brideGroomImage}
                       alt="Bride and groom wedding illustration"
                       loading="eager"
-                      className="w-[200px] h-[240px] md:w-[270px] md:h-[320px] object-contain rounded-[1.6rem] border border-theme-100"
+                      className="block w-full h-auto object-contain rounded-[1.6rem] border border-theme-100"
                     />
                   </div>
                 </motion.div>
