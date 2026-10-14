@@ -62,7 +62,7 @@ export default function Admin() {
         
         <div className="relative z-10 space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl md:text-4xl font-playball text-theme-800">Brandon & Christina</h1>
+            <h1 className="text-3xl md:text-4xl font-script text-theme-800">Brandon & Christina</h1>
             <p className="text-xs uppercase tracking-[0.3em] font-bold text-stone-400">Wedding Link Generator</p>
           </div>
           
@@ -73,7 +73,7 @@ export default function Admin() {
                 <select 
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
-                  className="w-full bg-stone-50 border border-theme-200 rounded-xl px-4 py-4 text-theme-900 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-base tracking-wide appearance-none cursor-pointer"
+                  className="w-full bg-stone-50 border border-theme-200 rounded-xl px-4 py-4 text-theme-900 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-serif text-base tracking-wide appearance-none cursor-pointer"
                 >
                   {PREFIXES.map(p => (
                     <option key={p} value={p}>{p}</option>
@@ -92,7 +92,7 @@ export default function Admin() {
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 placeholder="e.g. Sanjaya"
-                className="w-full bg-stone-50 border border-theme-200 rounded-xl px-4 py-4 text-theme-900 placeholder:text-stone-400 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-base tracking-wide"
+                className="w-full bg-stone-50 border border-theme-200 rounded-xl px-4 py-4 text-theme-900 placeholder:text-stone-400 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-serif text-base tracking-wide"
                 onKeyDown={(e) => e.key === 'Enter' && generate()}
               />
             </div>

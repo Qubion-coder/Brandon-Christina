@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, type TargetAndTransition } from "framer-motion";
-import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX, Languages, ChevronDown } from "lucide-react";
+import { attendanceOptions, guestOptions, loadLang, saveLang, translations, type Lang, type Strings } from "./i18n";
 
 /**
  * Premium Sri Lankan Wedding Invitation Theme
@@ -42,6 +43,32 @@ const safeViewport = {
 
 
 const mandalaImage = "/images/mandala_gold.png";
+
+const LangContext = createContext<Strings>(translations.en);
+const useStrings = () => useContext(LangContext);
+
+/** Top-right switch between English and Sinhala */
+function LangToggle({ lang, onToggle, className = "" }: { lang: Lang; onToggle: () => void; className?: string }) {
+  const t = useStrings();
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={t.langToggleLabel}
+      aria-pressed={lang === "si"}
+      lang={lang === "en" ? "si" : "en"}
+      className={`z-30 inline-flex items-center gap-1 rounded-full border border-theme-200 bg-white/90 p-1 text-xs font-semibold text-theme-800 shadow-md backdrop-blur-sm transition hover:bg-white hover:scale-105 ${className}`}
+    >
+      <Languages className="mx-1 h-4 w-4" />
+      <span className={`rounded-full px-2 py-1 transition ${lang === "en" ? "bg-theme-700 text-white" : ""}`}>
+        English
+      </span>
+      <span className={`rounded-full px-2 py-1 transition ${lang === "si" ? "bg-theme-700 text-white" : ""}`}>
+        සිංහල
+      </span>
+    </button>
+  );
+}
 
 type InviteImageProps = React.ComponentProps<"img"> & {
   eager?: boolean;
@@ -96,51 +123,19 @@ function InviteImage({
 }
 
 function LazyMapEmbed({ className }: { className?: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(!preferLiteExperience);
-
-  useEffect(() => {
-    if (active || preferLiteExperience) return;
-    const node = containerRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setActive(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "120px" },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [active]);
-
   return (
-    <div ref={containerRef} className={className}>
-      {active ? (
-        <iframe
-          src="https://maps.google.com/maps?q=Ranowell%20Hotel,%20Chilaw%20Road,%20Kochchikade,%20Negombo&t=&z=14&ie=UTF8&iwloc=&output=embed"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="w-full h-full grayscale-[0.3] md:hover:grayscale-0 transition-all duration-1000"
-          title="Venue location map"
-        />
-      ) : (
-        <button
-          type="button"
-          onClick={() => setActive(true)}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-theme-50 text-theme-800 px-6 text-center"
-        >
-          <MapPin className="w-8 h-8 text-theme-500" />
-          <span className="text-[10px] uppercase tracking-[0.35em] font-bold">Tap to load map</span>
-        </button>
-      )}
+    <div className={className}>
+      <iframe
+        src="https://maps.google.com/maps?q=Ranowell%20Hotel,%20Chilaw%20Road,%20Kochchikade,%20Negombo&t=&z=14&ie=UTF8&iwloc=&output=embed"
+        width="100%"
+        height="100%"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="eager"
+        referrerPolicy="no-referrer-when-downgrade"
+        className="w-full h-full grayscale-[0.3] md:hover:grayscale-0 transition-all duration-1000"
+        title="Venue location map"
+      />
     </div>
   );
 }
@@ -234,33 +229,12 @@ function FloatingPetals({ disabled = false }: { disabled?: boolean }) {
   );
 }
 
-const faqItems = [
-  {
-    question: "What's the RSVP deadline?",
-    answer:
-      "Please RSVP by 20 November 2026 so we can confirm our guest count and make the necessary arrangements.",
-  },
-  {
-    question: "Can I bring a guest?",
-    answer:
-      "Unfortunately, we are unable to accommodate additional guests. Please kindly refer to your invitation, which indicates the number of guests included. Thank you for your understanding.",
-  },
-  {
-    question: "Do you have any dietary requirements or food allergies?",
-    answer:
-      "Please speak with any member of the banquet staff on the day of the reception regarding any food allergies, dietary requirements, or concerns about ingredients.",
-  },
-  {
-    question: "Who should I contact if I have questions?",
-    answer:
-      "If you have any questions or need further clarification, please feel free to contact the bride or groom, or any of their immediate family members. We'll be happy to assist you.",
-  },
-];
 
 const envelopeImage ="/images/envelope_burgundy.png";
 
 /** Opening screen: guest taps the envelope to reveal the invitation */
-function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
+function EnvelopeIntro({ onOpen, lang, onToggleLang }: { onOpen: () => void; lang: Lang; onToggleLang: () => void }) {
+  const t = useStrings();
   const [sparkles] = useState(() =>
     Array.from({ length: 18 }).map((_, i) => ({
       id: i,
@@ -335,20 +309,21 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
         ))}
       </div>
 
+      <LangToggle lang={lang} onToggle={onToggleLang} className="absolute right-4 top-4" />
       <div className="relative z-20 flex min-h-[100dvh] flex-col items-center justify-center px-6">
         <motion.div
           initial={scrollInit({ opacity: 0, y: -20 })}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9 }}
-          className="mb-12 text-center"
+          className="mb-8 text-center"
         >
           <div className="mb-4 flex items-center justify-center gap-4">
             <span className="h-px w-12 bg-gradient-to-r from-transparent to-theme-400/70" />
-            <p className="text-[9px] md:text-[11px] uppercase tracking-[0.5em] text-theme-700 font-bold">The Wedding Invitation</p>
+            <p className="text-[9px] md:text-[11px] uppercase tracking-[0.5em] text-theme-700 font-bold">{t.envelopeTitle}</p>
             <span className="h-px w-12 bg-gradient-to-l from-transparent to-theme-400/70" />
           </div>
-          <h1 className="font-playball text-4xl md:text-6xl tracking-[0.05em] text-theme-800">
-            Brandon <span className="text-navy-800">&</span> Christina
+          <h1 className="font-script text-4xl md:text-6xl tracking-[0.05em] text-theme-800">
+            {t.groom} <span className="text-navy-800">{t.ampersand}</span> {t.bride}
           </h1>
         </motion.div>
 
@@ -362,7 +337,7 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
           <motion.button
             type="button"
             onClick={onOpen}
-            aria-label="Open the wedding invitation"
+            aria-label={t.openEnvelope}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="group relative block cursor-pointer isolate"
@@ -374,7 +349,7 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
             />
           </motion.button>
           <p className="envelope-hint mt-6 text-center text-[11px] uppercase tracking-[0.45em] text-theme-700/80 font-bold">
-            Touch to Unveil
+            {t.touchToUnveil}
           </p>
         </motion.div>
       </div>
@@ -383,6 +358,7 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
 }
 
 function CountdownTimer() {
+  const t = useStrings();
   const targetDate = new Date("December 18, 2026 17:00:00").getTime();
   const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
 
@@ -399,10 +375,10 @@ function CountdownTimer() {
   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
   const stats = [
-    { label: "Days", value: days },
-    { label: "Hours", value: hours },
-    { label: "Minutes", value: minutes },
-    { label: "Seconds", value: seconds },
+    { label: t.days, value: days },
+    { label: t.hours, value: hours },
+    { label: t.minutes, value: minutes },
+    { label: t.seconds, value: seconds },
   ];
 
   return (
@@ -426,7 +402,7 @@ function CountdownTimer() {
             <div className="absolute inset-1.5 sm:inset-2 md:inset-3 border-[0.5px] border-theme-300/50 rounded-t-full pointer-events-none" />
 
             {/* The Number */}
-            <span className="text-2xl sm:text-3xl md:text-5xl font-playball text-theme-800 leading-none relative z-10 drop-shadow-sm mt-3 sm:mt-4 md:mt-6 transition-transform duration-500 group-hover:scale-110">
+            <span className="text-2xl sm:text-3xl md:text-5xl font-script text-theme-800 leading-none relative z-10 drop-shadow-sm mt-3 sm:mt-4 md:mt-6 transition-transform duration-500 group-hover:scale-110">
               {Math.max(0, stat.value).toString().padStart(2, '0')}
             </span>
 
@@ -450,6 +426,23 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
   const backgroundMusicRef = useRef<HTMLAudioElement>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+  const [lang, setLang] = useState<Lang>(loadLang);
+  const t = translations[lang];
+  const [heroSparkles] = useState(() =>
+    Array.from({ length: 14 }).map((_, i) => ({
+      id: i,
+      left: 12 + Math.random() * 76,
+      top: 8 + Math.random() * 84,
+      scale: Math.random() * 0.7 + 0.5,
+      delay: Math.random() * 4,
+    })),
+  );
+  const toggleLang = () => setLang((prev) => (prev === "en" ? "si" : "en"));
+
+  useEffect(() => {
+    saveLang(lang);
+    document.documentElement.lang = lang;
+  }, [lang]);
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(() =>
     typeof window !== "undefined" ? detectLiteExperience() : false,
   );
@@ -597,7 +590,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
   };
 
   return (
+    <LangContext.Provider value={t}>
     <main
+      lang={lang}
       className={`h-[100dvh] w-full bg-[#ffffff] overflow-y-auto overflow-x-hidden relative font-montserrat smooth-mobile-scroll ${preferLiteExperience ? "mobile-lite ios-scroll-stable" : "scroll-smooth"}`}
     >
       <audio
@@ -610,14 +605,14 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
       <button
         type="button"
         onClick={toggleMusic}
-        aria-label={isMusicPlaying ? "Turn music off" : "Turn music on"}
+        aria-label={isMusicPlaying ? t.musicOff : t.musicOn}
         aria-pressed={isMusicPlaying}
         className="fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-theme-200 bg-white/90 text-theme-800 shadow-lg backdrop-blur-sm transition hover:bg-white hover:scale-105"
       >
         {isMusicPlaying ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
       </button>
       <AnimatePresence>
-        {!isEnvelopeOpen && <EnvelopeIntro onOpen={() => setIsEnvelopeOpen(true)} />}
+        {!isEnvelopeOpen && <EnvelopeIntro onOpen={() => setIsEnvelopeOpen(true)} lang={lang} onToggleLang={toggleLang} />}
       </AnimatePresence>
       <FloatingPetals disabled={isLowPerformanceMode || !isEnvelopeOpen} />
 
@@ -629,86 +624,108 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
       >
 
             {/* Hero Section */}
-            <section className="min-h-[100dvh] w-full flex items-center justify-center p-4 md:p-12 relative overflow-hidden bg-[#ffffff]">
+            <section className="min-h-[100dvh] w-full flex items-center justify-center relative overflow-hidden bg-[#fdf9f3]">
+              <LangToggle lang={lang} onToggle={toggleLang} className="absolute right-4 top-4" />
               <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: "url('/Elegant%20Watercolor%20Floral%20Arch%20Invitation.png')" }}
                 aria-hidden="true"
               />
 
-              <motion.div
-                initial={scrollInit({ opacity: 0, y: 50 })}
-                animate={{ opacity: 1, y: 0 }}
-                transition={
-                  preferLiteExperience
-                    ? { duration: 0.35, ease: "easeOut" }
-                    : { duration: 1.2, delay: 0.2, ease: [0.25, 1, 0.5, 1] }
-                }
-                className="relative z-10 w-full max-w-[560px] min-h-[500px] h-[85vh] md:h-[80vh] flex flex-col items-center overflow-hidden p-6 pt-12 md:p-10 md:pt-16"
+              {/* Soft glow behind the text so it lifts off the paper */}
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.9)_0%,rgba(255,255,255,0.4)_38%,transparent_65%)]" aria-hidden="true" />
+              <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+                {heroSparkles.map((sparkle) => (
+                  <span
+                    key={sparkle.id}
+                    className="envelope-sparkle absolute h-1 w-1 rounded-full bg-gold-400"
+                    style={{
+                      left: `${sparkle.left}%`,
+                      top: `${sparkle.top}%`,
+                      transform: `scale(${sparkle.scale})`,
+                      animationDelay: `${sparkle.delay}s`,
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div
+                key={`hero-${lang}`}
+                className="relative z-10 w-full max-w-[560px] min-h-[100dvh] flex flex-col items-center justify-center text-center px-14 py-20 md:py-24"
               >
-                <div className="flex flex-col items-center text-center space-y-4 flex-1 w-full relative z-10">
-                  <motion.div
-                    initial={scrollInit({ opacity: 0, y: 20 })}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={preferLiteExperience ? { duration: 0.3 } : { delay: 0.8, duration: 1 }}
-                  >
-                    <span className="block text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-theme-700 font-bold mb-2">
-                      Please join us
-                    </span>
-                  </motion.div>
+                <p
+                  className={`max-w-[230px] md:max-w-none text-[9px] md:text-[11px] uppercase tracking-[0.4em] md:tracking-[0.6em] leading-loose text-gold-600 font-semibold ${isEnvelopeOpen ? "hero-in" : ""}`}
+                  style={{ animationDelay: "0.2s" }}
+                >
+                  {t.pleaseJoinUs}
+                </p>
 
-                  <div className="space-y-0 py-4 flex-1 flex flex-col justify-center">
-                    <motion.h1
-                      initial={scrollInit({ opacity: 0, x: -20 })}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={preferLiteExperience ? { duration: 0.35 } : { delay: 1, duration: 0.8 }}
-                      className="font-playball text-[3rem] sm:text-[3.5rem] md:text-[5rem] text-navy-800 leading-[1.1] drop-shadow-sm"
-                    >
-                      Brandon
-                    </motion.h1>
-                    <motion.div
-                      initial={scrollInit({ scale: 0 })}
-                      animate={{ scale: 1 }}
-                      transition={preferLiteExperience ? { duration: 0.25 } : { delay: 1.2, duration: 0.5 }}
-                      className="font-playball text-3xl md:text-5xl text-theme-500 italic font-light my-2 md:my-4 tracking-widest"
-                    >
-                      &
-                    </motion.div>
-                    <motion.h1
-                      initial={scrollInit({ opacity: 0, x: 20 })}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={preferLiteExperience ? { duration: 0.35 } : { delay: 1.4, duration: 0.8 }}
-                      className="font-playball text-[3rem] sm:text-[3.5rem] md:text-[5rem] text-navy-800 leading-[1.1] drop-shadow-sm"
-                    >
-                      Christina
-                    </motion.h1>
+                {/* Names, offset for a hand-lettered feel */}
+                <h1 className="flex w-full flex-col font-script leading-none">
+                  <span
+                    className={`hero-names block self-start text-[3.4rem] sm:text-[4rem] md:text-[5.5rem] ${isEnvelopeOpen ? "hero-in" : ""}`}
+                    style={{ animationDelay: "0.6s" }}
+                  >
+                    {t.groom}
+                  </span>
+                  <span
+                    className={`my-1 flex items-center justify-center gap-3 ${isEnvelopeOpen ? "hero-in" : ""}`}
+                    style={{ animationDelay: "0.8s" }}
+                  >
+                    <span className="h-px w-10 bg-gradient-to-r from-transparent to-gold-400" />
+                    <span className="text-3xl md:text-4xl text-gold-500">{t.ampersand}</span>
+                    <span className="h-px w-10 bg-gradient-to-l from-transparent to-gold-400" />
+                  </span>
+                  <span
+                    className={`hero-names block self-end text-[3.4rem] sm:text-[4rem] md:text-[5.5rem] ${isEnvelopeOpen ? "hero-in" : ""}`}
+                    style={{ animationDelay: "1s" }}
+                  >
+                    {t.bride}
+                  </span>
+                </h1>
+
+                <p
+                  className={`mt-5 font-serif italic text-base md:text-lg text-navy-800/80 ${isEnvelopeOpen ? "hero-in" : ""}`}
+                  style={{ animationDelay: "1.2s" }}
+                >
+                  {t.gettingMarried}
+                </p>
+
+                {/* Date block: weekday | day | month */}
+                <div
+                  className={`mt-8 w-full max-w-[300px] ${isEnvelopeOpen ? "hero-in" : ""}`}
+                  style={{ animationDelay: "1.4s" }}
+                >
+                  <div className="grid grid-cols-[1fr_auto_1fr] items-center font-serif text-navy-800">
+                    <span className="border-y border-gold-400/60 py-2 text-[11px] md:text-xs uppercase tracking-[0.3em]">{t.heroWeekday}</span>
+                    <span className="px-4 text-5xl md:text-6xl leading-none text-theme-700">{t.heroDay}</span>
+                    <span className="border-y border-gold-400/60 py-2 text-[11px] md:text-xs uppercase tracking-[0.3em]">{t.heroMonth}</span>
                   </div>
-
-                  <motion.div
-                    initial={scrollInit({ opacity: 0 })}
-                    animate={{ opacity: 1 }}
-                    transition={preferLiteExperience ? { duration: 0.3 } : { delay: 1.8, duration: 1 }}
-                    className="mt-auto pb-4 w-full flex flex-col items-center -translate-y-[1cm] md:translate-y-0"
-                  >
-                    <div className="flex items-center justify-center gap-4 mb-6 opacity-70 w-full px-8">
-                      <div className="h-px w-full bg-gradient-to-r from-transparent via-theme-300 to-theme-400" />
-                      <div className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
-                      <div className="h-px w-full bg-gradient-to-l from-transparent via-theme-300 to-theme-400" />
-                    </div>
-                    <div className="font-cinzel space-y-1">
-                      <p className="text-sm md:text-base text-navy-800 tracking-[0.2em] md:tracking-[0.3em] font-bold">18 DEC 2026</p>
-                      <p className="text-[8px] md:text-[9px] text-theme-600 tracking-[0.2em] uppercase font-bold">Negombo, Sri Lanka</p>
-                    </div>
-                  </motion.div>
+                  <p className="mt-2 font-serif text-lg tracking-[0.5em] text-gold-600">{t.heroYear}</p>
                 </div>
-              </motion.div>
 
+                <p
+                  className={`mt-5 inline-flex items-center gap-2 text-[9px] md:text-[10px] uppercase tracking-[0.35em] text-theme-600 font-semibold ${isEnvelopeOpen ? "hero-in" : ""}`}
+                  style={{ animationDelay: "1.6s" }}
+                >
+                  <MapPin className="h-3 w-3" />
+                  {t.heroPlace}
+                </p>
+              </div>
 
-
+              <div className="absolute bottom-16 md:bottom-10 left-1/2 z-10 -translate-x-1/2" aria-hidden="true">
+                <div
+                  className={`flex flex-col items-center gap-1 text-gold-600 ${isEnvelopeOpen ? "hero-in" : ""}`}
+                  style={{ animationDelay: "2s" }}
+                >
+                  <span className="text-[8px] uppercase tracking-[0.4em]">{t.scrollDown}</span>
+                  <ChevronDown className="hero-scroll-cue h-4 w-4" />
+                </div>
+              </div>
             </section>
 
             {/* Wedding Details Section */}
-            <section className="cv-auto py-24 md:py-32 w-full flex flex-col items-center px-4 relative">
+            <section className="cv-auto py-12 md:py-20 w-full flex flex-col items-center px-4 relative">
               <div className="section-floral-overlay absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
                 {/* Top-left: mandala on desktop */}
                 <InviteImage src={mandalaImage} className="hidden md:block absolute -left-10 top-8 w-[460px] h-auto mix-blend-multiply opacity-[.33] -rotate-[8deg]" alt="" />
@@ -733,30 +750,34 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   viewport={safeViewport}
                   className="flex flex-col items-center mb-8 md:mb-16"
                 >
-                  <div className="w-px h-16 md:h-24 bg-gradient-to-b from-transparent to-theme-400 mb-6 md:mb-10" />
+                  <div className="w-px h-10 md:h-16 bg-gradient-to-b from-transparent to-theme-400 mb-4 md:mb-8" />
                   <div className="bg-white/95 md:bg-transparent md:backdrop-blur-none px-6 py-3 md:p-0 rounded-2xl md:rounded-none shadow-[0_4px_20px_rgba(255,255,255,0.8)] md:shadow-none border border-white/60 md:border-none relative z-10">
-                    <p className="font-cinzel text-navy-800 text-sm md:text-xl tracking-[0.15em] md:tracking-[0.2em] font-bold text-center leading-relaxed mb-4 md:mb-6">
-                      Mr. & Mrs. De Kauwe
-                      <span className="block font-playball text-theme-500 text-xl md:text-3xl font-normal tracking-normal my-1">&</span>
-                      Mr. & Mrs. Kehelalla
+                    <p className="font-serif text-navy-800 text-sm md:text-xl tracking-[0.15em] md:tracking-[0.2em] font-bold text-center leading-relaxed mb-4 md:mb-6">
+                      {t.groomParents}
+                      <span className="block font-script text-theme-500 text-xl md:text-3xl font-normal tracking-normal my-1">{t.ampersand}</span>
+                      {t.brideParents}
                     </p>
                     <p className="text-theme-700 text-[9px] md:text-[12px] tracking-[0.4em] md:tracking-[0.6em] uppercase font-bold text-center leading-loose">
                       {guestName ? (
                         <>
-                          REQUEST THE HONOUR OF THE PRESENCE OF
-                          <span className="block font-playball text-[1.8rem] md:text-5xl text-theme-800 normal-case tracking-normal my-4 font-normal drop-shadow-sm">
+                          {t.requestHonourOfPresenceOf}
+                          <span className="block font-script text-[1.8rem] md:text-5xl text-theme-800 normal-case tracking-normal my-4 font-normal drop-shadow-sm">
                             {guestName}
                           </span>
-                          TO CELEBRATE THE WEDDING OF THEIR CHILDREN
+                          {t.toCelebrate}
                         </>
                       ) : (
-                        <>REQUEST THE HONOUR OF YOUR PRESENCE<br className="hidden md:block" /> TO CELEBRATE THE WEDDING OF THEIR CHILDREN</>
+                        lang === "en" ? (
+                        <>{t.requestHonourOfYourPresence}<br className="hidden md:block" /> {t.toCelebrate}</>
+                      ) : (
+                        t.requestHonourOfYourPresence
+                      )
                       )}
                     </p>
                   </div>
                 </motion.div>
 
-                <div className="relative w-full flex flex-col md:flex-row items-center justify-center md:items-stretch gap-6 md:gap-10 my-12 md:my-20 z-10 px-2 lg:px-8">
+                <div className="relative w-full flex flex-col md:flex-row items-center justify-center md:items-stretch gap-6 md:gap-10 my-8 md:my-14 z-10 px-2 lg:px-8">
 
                   {/* Groom's Card */}
                   <motion.div
@@ -767,12 +788,12 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   >
                     <div className="absolute inset-2 border border-theme-200/50 rounded-tl-[90px] rounded-br-[90px] md:rounded-tl-[120px] md:rounded-br-[120px] pointer-events-none" />
                     <div className="absolute inset-0 opacity-[0.02] paper-grain pointer-events-none" />
-                    <div className="relative z-10 space-y-4 py-8 md:py-12">
+                    <div className="relative z-10 space-y-3 py-4 md:py-8">
                       <div className="space-y-2">
-                        <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">Beloved son of</p>
-                        <p className="text-xs md:text-sm font-cinzel text-stone-600 tracking-wide leading-relaxed">Mr. & Mrs. De Kauwe</p>
+                        <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">{t.belovedSonOf}</p>
+                        <p className="text-xs md:text-sm font-serif text-stone-600 tracking-wide leading-relaxed">{t.groomParents}</p>
                       </div>
-                      <h3 className="text-5xl md:text-7xl font-playball text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">Brandon</h3>
+                      <h3 className="text-5xl md:text-7xl font-script text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">{t.groom}</h3>
                     </div>
                   </motion.div>
 
@@ -786,7 +807,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
                       className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-theme-500 to-theme-700 rounded-full flex items-center justify-center shadow-xl shadow-theme-900/20 border-4 border-[#ffffff]"
                     >
-                      <span className="text-3xl md:text-5xl font-playball text-white md:-mt-1 drop-shadow-md">&</span>
+                      <span className="text-3xl md:text-5xl font-script text-white md:-mt-1 drop-shadow-md">&</span>
                     </motion.div>
                     <div className="hidden md:block w-px h-32 bg-gradient-to-b from-theme-300 to-transparent" />
                   </div>
@@ -801,12 +822,12 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   >
                     <div className="absolute inset-2 border border-theme-200/50 rounded-tr-[90px] rounded-bl-[90px] md:rounded-tr-[120px] md:rounded-bl-[120px] pointer-events-none" />
                     <div className="absolute inset-0 opacity-[0.02] paper-grain pointer-events-none" />
-                    <div className="relative z-10 space-y-4 py-8 md:py-12">
+                    <div className="relative z-10 space-y-3 py-4 md:py-8">
                       <div className="space-y-2">
-                        <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">Beloved daughter of</p>
-                        <p className="text-xs md:text-sm font-cinzel text-stone-600 tracking-wide leading-relaxed">Mr. & Mrs. Kehelalla</p>
+                        <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">{t.belovedDaughterOf}</p>
+                        <p className="text-xs md:text-sm font-serif text-stone-600 tracking-wide leading-relaxed">{t.brideParents}</p>
                       </div>
-                      <h3 className="text-5xl md:text-7xl font-playball text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">Christina</h3>
+                      <h3 className="text-5xl md:text-7xl font-script text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">{t.bride}</h3>
                     </div>
                   </motion.div>
                 </div>
@@ -816,16 +837,16 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   initial={scrollInit({ opacity: 0, y: 30 })}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={safeViewport}
-                  className="flex flex-col items-center space-y-10 mt-4 md:mt-16 w-full"
+                  className="flex flex-col items-center space-y-8 mt-2 md:mt-10 w-full"
                 >
                   <div className="w-1.5 h-1.5 rotate-45 bg-theme-300" />
 
                   <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-32 text-center w-full max-w-4xl px-4">
                     <div className="flex flex-col items-center flex-1">
                       <Calendar className="w-6 h-6 md:w-8 md:h-8 text-theme-500 mb-4 opacity-80" />
-                      <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-stone-400 font-bold mb-3">The Date</p>
-                      <p className="font-cinzel text-xl md:text-3xl text-navy-800 tracking-widest font-bold whitespace-nowrap">FRIDAY, 18 DEC</p>
-                      <p className="font-cinzel text-lg md:text-xl text-theme-600 tracking-[0.3em] font-normal mt-2">2026</p>
+                      <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-stone-400 font-bold mb-3">{t.theDate}</p>
+                      <p className="font-serif text-xl md:text-3xl text-navy-800 tracking-widest font-bold whitespace-nowrap">{t.dateLine}</p>
+                      <p className="font-serif text-lg md:text-xl text-theme-600 tracking-[0.3em] font-normal mt-2">{t.year}</p>
                     </div>
 
                     <div className="hidden md:flex flex-col items-center gap-3">
@@ -842,9 +863,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
 
                     <div className="flex flex-col items-center flex-1">
                       <Clock className="w-6 h-6 md:w-8 md:h-8 text-theme-500 mb-4 opacity-80" />
-                      <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-stone-400 font-bold mb-3">The Time</p>
-                      <p className="font-cinzel text-xl md:text-3xl text-navy-800 tracking-widest font-bold whitespace-nowrap">05:00 PM - 06:30 PM</p>
-                      <p className="font-cinzel text-xs md:text-sm text-theme-600 tracking-[0.2em] mt-3 uppercase">Ceremony at the Outdoor Deck</p>
+                      <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-stone-400 font-bold mb-3">{t.theTime}</p>
+                      <p className="font-serif text-xl md:text-3xl text-navy-800 tracking-widest font-bold whitespace-nowrap">{t.timeLine}</p>
+                      <p className="font-serif text-xs md:text-sm text-theme-600 tracking-[0.2em] mt-3 uppercase">{t.ceremonyPlace}</p>
                     </div>
                   </div>
 
@@ -853,7 +874,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       <div className="absolute inset-0 bg-theme-100 blur-lg opacity-40 group-hover:opacity-60 transition-opacity decorative-blur hidden md:block" />
                       <p className="relative text-theme-800 bg-white shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] text-[9px] md:text-[11px] font-bold tracking-[0.3em] md:tracking-[0.4em] uppercase px-6 lg:px-10 py-4 lg:py-5 rounded-full border border-theme-200 flex items-center justify-center gap-4 w-full md:w-auto">
                         <span className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
-                        <span className="whitespace-nowrap">Reception 7:00 PM - 12:00 AM</span>
+                        <span className="whitespace-nowrap">{t.reception}</span>
                         <span className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
                       </p>
                     </div>
@@ -864,7 +885,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
 
             {/* Countdown Section */}
             <section
-              className="cv-auto py-24 md:py-36 bg-[#fbf8f9] bg-cover bg-center relative border-y border-theme-100/30 flex flex-col items-center overflow-hidden"
+              className="cv-auto py-14 md:py-24 bg-[#fbf8f9] bg-cover bg-center relative border-y border-theme-100/30 flex flex-col items-center overflow-hidden"
               style={{ backgroundImage: 'url("/Vintage Floral Countdown Frame.png")' }}
             >
               {/* Premium Background Elements */}
@@ -879,8 +900,8 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   className="relative w-full flex flex-col items-center"
                 >
                   {/* Watermark text */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-playball text-[12vw] md:text-[140px] text-theme-100/50 whitespace-nowrap pointer-events-none z-0 select-none">
-                    Forever
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-script text-[12vw] md:text-[140px] text-theme-100/50 whitespace-nowrap pointer-events-none z-0 select-none">
+                    {t.forever}
                   </div>
 
                   <div className="flex items-center gap-4 md:gap-8 justify-center relative z-10 w-full mb-6 mt-4 opacity-70">
@@ -889,13 +910,13 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <div className="h-px w-16 md:w-32 bg-gradient-to-l from-transparent to-theme-400" />
                   </div>
 
-                  <h2 className="font-cinzel text-3xl md:text-5xl text-theme-900 mb-8 relative z-10 tracking-widest font-bold drop-shadow-sm px-4 leading-[1.4]">
-                    Wait for the <span className="font-playball text-theme-700 italic lowercase tracking-normal text-4xl md:text-7xl ml-2">magic</span>
+                  <h2 className="font-serif text-3xl md:text-5xl text-theme-900 mb-8 relative z-10 tracking-widest font-bold drop-shadow-sm px-4 leading-[1.4]">
+                    {t.waitForThe} <span className="font-script text-theme-700 italic lowercase tracking-normal text-4xl md:text-7xl ml-2">{t.magic}</span>
                   </h2>
 
                   <p className="text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-theme-600 font-bold bg-white/95 md:bg-white/80 md:backdrop-blur-sm px-8 py-3 rounded-full border border-theme-200/50 inline-flex items-center gap-3 shadow-[0_4px_15px_-5px_rgba(0,0,0,0.05)] relative z-10">
                     <span className="w-1 h-1 rounded-full bg-theme-400 animate-pulse" />
-                    Counting Down
+                    {t.countingDown}
                     <span className="w-1 h-1 rounded-full bg-theme-400 animate-pulse" />
                   </p>
                 </motion.div>
@@ -905,7 +926,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             </section>
 
             {/* Venue Location Section */}
-            <section className="cv-auto py-24 md:py-36 bg-[#ffffff] relative overflow-hidden">
+            <section className="cv-auto py-14 md:py-24 bg-[#ffffff] relative overflow-hidden">
               {/* Decorative Background */}
               <div className="absolute inset-0 opacity-5 paper-grain pointer-events-none" />
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-theme-200 blur-[150px] rounded-full opacity-20 pointer-events-none decorative-blur hidden md:block" />
@@ -935,10 +956,10 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <div className="flex flex-col items-start gap-4">
                       <div className="flex items-center gap-4">
                         <div className="w-8 h-px bg-theme-400" />
-                        <span className="text-theme-600 font-bold uppercase tracking-[0.4em] text-[9px] md:text-[11px]">The Venue</span>
+                        <span className="text-theme-600 font-bold uppercase tracking-[0.4em] text-[9px] md:text-[11px]">{t.theVenue}</span>
                       </div>
-                      <h2 className="font-playball text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-theme-900 leading-[1] drop-shadow-sm ml-[-4px]">
-                        Ranowell Hotel
+                      <h2 className="font-script text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-theme-900 leading-[1] drop-shadow-sm ml-[-4px]">
+                        {t.venueName}
                       </h2>
                     </div>
 
@@ -949,13 +970,13 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                         <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm border border-theme-100 absolute -left-5 top-0">
                           <MapPin className="w-4 h-4 text-theme-500" />
                         </div>
-                        <p className="text-lg md:text-xl text-stone-700 font-cinzel font-medium leading-relaxed tracking-wide">
-                          Chilaw Road, Kochchikade,<br /> Negombo.
+                        <p className="text-lg md:text-xl text-stone-700 font-serif font-medium leading-relaxed tracking-wide">
+                          {t.venueAddress[0]}<br /> {t.venueAddress[1]}
                         </p>
                       </div>
 
                       <div className="pl-8 space-y-4 pt-4 text-stone-500 text-sm md:text-base tracking-wide font-light leading-relaxed">
-                        The ceremony will be held at the Outdoor Deck from 5:00 PM to 6:30 PM, followed by the reception at the Kings Court Banquet from 7:00 PM to midnight. We look forward to welcoming you to celebrate the wedding of Brandon and Christina.
+                        {t.venueDescription}
                       </div>
                     </div>
 
@@ -965,7 +986,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                         className="w-full md:w-auto flex items-center justify-center gap-4 bg-navy-800 text-white px-10 py-5 rounded-full font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs hover:bg-navy-900 hover:shadow-xl hover:shadow-navy-900/20 transition-all duration-300 group"
                       >
                         <MapPin className="w-4 h-4 group-hover:-translate-y-1 transition-transform duration-300" />
-                        Get Directions
+                        {t.getDirections}
                       </button>
                     </div>
                   </motion.div>
@@ -988,7 +1009,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white via-white/80 to-transparent h-32 pointer-events-none z-10 flex items-end justify-center pb-6">
                       <p className="text-[8px] uppercase tracking-widest text-stone-500 font-bold bg-white/95 md:bg-white/90 md:backdrop-blur-md px-5 py-2 rounded-full shadow-sm inline-flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-theme-400 animate-pulse" />
-                        View on Map
+                        {t.viewOnMap}
                       </p>
                     </div>
                   </motion.div>
@@ -997,7 +1018,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             </section>
 
             {/* RSVP Section */}
-            <section className="cv-auto py-24 md:py-36 bg-[#3e101c] text-white relative overflow-hidden flex flex-col items-center">
+            <section className="cv-auto py-14 md:py-24 bg-[#3e101c] text-white relative overflow-hidden flex flex-col items-center">
               {/* Opulent dark background */}
               <div className="absolute inset-0 opacity-10 paper-grain pointer-events-none" />
               <div className="absolute top-0 right-0 w-[60vw] h-[60vw] max-w-[800px] bg-theme-800 blur-[150px] rounded-full opacity-30 pointer-events-none decorative-blur hidden md:block" />
@@ -1010,17 +1031,29 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   viewport={safeViewport}
                   className="flex flex-col items-center"
                 >
-                  <p className="text-[10px] md:text-[12px] uppercase tracking-[0.5em] md:tracking-[0.8em] text-theme-300 font-bold mb-6">Will You Join Us?</p>
-                  <h2 className="font-playball text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-white mb-6 drop-shadow-md">RSVP</h2>
+                  <p className="text-[10px] md:text-[12px] uppercase tracking-[0.5em] md:tracking-[0.8em] text-theme-300 font-bold mb-6">{t.willYouJoinUs}</p>
+                  <h2 className="font-script text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-white mb-6 drop-shadow-md">{t.rsvpTitle}</h2>
                   <div className="flex items-center gap-4 justify-center w-full mb-8 opacity-60">
                     <div className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-theme-300" />
                     <div className="w-1.5 h-1.5 rotate-45 bg-white" />
                     <div className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-theme-300" />
                   </div>
-                  <p className="text-stone-300 text-sm md:text-base max-w-md mx-auto leading-relaxed mb-16 tracking-wide font-light">
-                    We would be absolutely thrilled to celebrate with you. Kindly confirm your presence using the form below.
-                    <span className="block mt-6 font-cinzel text-theme-200 text-xs md:text-sm tracking-[0.2em] uppercase font-bold">RSVP by 20 November 2026</span>
+                  <p className="text-stone-300 text-sm md:text-base max-w-md mx-auto leading-relaxed mb-10 tracking-wide font-light">
+                    {t.rsvpIntro}
+                    <span className="block mt-6 font-serif text-theme-200 text-xs md:text-sm tracking-[0.2em] uppercase font-bold">{t.rsvpBy}</span>
                   </p>
+
+                  <div className="mb-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                    <p className="mb-3 text-[9px] uppercase tracking-[0.3em] text-theme-200 font-bold">{t.rsvpContactTitle}</p>
+                    <div className="flex flex-col items-center justify-center gap-2 text-sm md:flex-row md:gap-6">
+                      <a className="font-serif text-white transition-colors hover:text-theme-200" href="tel:+94741422733">
+                        {t.rsvpContactBrandon} - +94 741422733
+                      </a>
+                      <a className="font-serif text-white transition-colors hover:text-theme-200" href="tel:+94771178060">
+                        {t.rsvpContactChristina} - +94 771178060
+                      </a>
+                    </div>
+                  </div>
 
                   {/* Premium RSVP Form */}
                   <div className="w-full bg-white/10 md:bg-white/5 md:backdrop-blur-md p-6 sm:p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)]">
@@ -1031,35 +1064,35 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
-                        <h3 className="font-playball text-3xl text-white">Thank You!</h3>
-                        <p className="text-stone-300 font-light">Your RSVP has been successfully received.</p>
+                        <h3 className="font-script text-3xl text-white">{t.thankYou}</h3>
+                        <p className="text-stone-300 font-light">{t.rsvpReceived}</p>
                       </div>
                     ) : (
                     <form className="space-y-8 text-left" onSubmit={handleRsvpSubmit}>
                       <div className="space-y-3">
-                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Full Name</label>
+                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">{t.fullName}</label>
                         <input
                           type="text"
                           value={rsvpData["Full Name"]}
                           onChange={(e) => setRsvpData(prev => ({ ...prev, "Full Name": e.target.value }))}
-                          placeholder="John & Jane Doe"
+                          placeholder={t.fullNamePlaceholder}
                           required
-                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
+                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-serif text-lg md:text-xl tracking-wide"
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Will you be joining us for our wedding?</label>
+                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">{t.attendanceQuestion}</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                          {["Joyfully accepts", "Regretfully declines"].map((option) => (
+                          {attendanceOptions.map((option) => (
                             <button
                               key={option}
                               type="button"
                               aria-pressed={rsvpData["Attendance"] === option}
                               onClick={() => setRsvpData(prev => ({ ...prev, "Attendance": option }))}
-                              className={`rounded-full border px-4 py-3 font-cinzel text-sm md:text-base tracking-wide transition-colors ${rsvpData["Attendance"] === option ? "bg-theme-200 text-stone-900 border-theme-200" : "bg-transparent text-white border-white/20 hover:border-theme-300"}`}
+                              className={`rounded-full border px-4 py-3 font-serif text-sm md:text-base tracking-wide transition-colors ${rsvpData["Attendance"] === option ? "bg-theme-200 text-stone-900 border-theme-200" : "bg-transparent text-white border-white/20 hover:border-theme-300"}`}
                             >
-                              {option}
+                              {t.attendance[option]}
                             </button>
                           ))}
                         </div>
@@ -1068,54 +1101,53 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       {isAttending && (
                         <>
                           <div className="space-y-3">
-                            <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">How many people will be attending, as per your invitation?</label>
+                            <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">{t.guestsQuestion}</label>
                             <div className="relative">
                               <select
                                 value={rsvpData["Guests"]}
                                 onChange={(e) => setRsvpData(prev => ({ ...prev, "Guests": e.target.value }))}
-                                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide appearance-none cursor-pointer"
+                                className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-serif text-lg md:text-xl tracking-wide appearance-none cursor-pointer"
                               >
-                                <option value="1 guest" className="bg-[#3e101c] text-white">1 guest</option>
-                                <option value="2 guests" className="bg-[#3e101c] text-white">2 guests</option>
-                                <option value="3 guests" className="bg-[#3e101c] text-white">3 guests</option>
-                                <option value="4 guests" className="bg-[#3e101c] text-white">4 guests</option>
+                                {guestOptions.map((option) => (
+                                  <option key={option} value={option} className="bg-[#3e101c] text-white">{t.guests[option]}</option>
+                                ))}
                               </select>
                               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                 <div className="w-2 h-2 border-r border-b border-theme-300 rotate-45 transform -translate-y-[25%]" />
                               </div>
                             </div>
-                            <p className="text-white/50 text-xs font-light tracking-wide ml-2">Please select only the number of guests specified on your invitation.</p>
+                            <p className="text-white/50 text-xs font-light tracking-wide ml-2">{t.guestsHint}</p>
                           </div>
 
                           <div className="space-y-3">
-                            <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Full names of all guests attending</label>
+                            <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">{t.guestNames}</label>
                             <textarea
                               rows={3}
                               value={rsvpData["Guest Names"]}
                               onChange={(e) => setRsvpData(prev => ({ ...prev, "Guest Names": e.target.value }))}
-                              placeholder="One name per line"
+                              placeholder={t.guestNamesPlaceholder}
                               required
-                              className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide resize-none"
+                              className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-serif text-lg md:text-xl tracking-wide resize-none"
                             />
                           </div>
                         </>
                       )}
 
                       <div className="space-y-3">
-                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">A special message for the bride and groom (optional)</label>
+                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">{t.specialMessage}</label>
                         <textarea
                           rows={3}
                           value={rsvpData["Message"]}
                           onChange={(e) => setRsvpData(prev => ({ ...prev, "Message": e.target.value }))}
-                          placeholder="Wishing you a lifetime of happiness..."
-                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide resize-none"
+                          placeholder={t.messagePlaceholder}
+                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-serif text-lg md:text-xl tracking-wide resize-none"
                         />
                       </div>
 
 
                       <div className="pt-10">
                         {rsvpStatus === "error" && (
-                          <p className="text-red-400 text-xs text-center mb-4">Something went wrong. Please try again.</p>
+                          <p className="text-red-400 text-xs text-center mb-4">{t.errorMessage}</p>
                         )}
                         <button
                           type="submit"
@@ -1123,7 +1155,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                           className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4 disabled:opacity-70"
                         >
                           <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
-                          {rsvpStatus === "submitting" ? "Sending..." : "Send RSVP"}
+                          {rsvpStatus === "submitting" ? t.sending : t.sendRsvp}
                           <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
                         </button>
                       </div>
@@ -1135,27 +1167,27 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             </section>
 
             {/* Questions & Answers Section */}
-            <section className="cv-auto py-24 md:py-36 bg-[#ffffff] relative overflow-hidden flex flex-col items-center">
+            <section className="cv-auto py-14 md:py-24 bg-[#ffffff] relative overflow-hidden flex flex-col items-center">
               <div className="absolute inset-0 opacity-[0.03] paper-grain pointer-events-none" />
               <div className="container mx-auto px-4 max-w-5xl relative z-10 w-full">
                 <motion.div
                   initial={scrollInit({ opacity: 0, y: 20 })}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={safeViewport}
-                  className="flex flex-col items-center text-center mb-12 md:mb-20"
+                  className="flex flex-col items-center text-center mb-8 md:mb-14"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-8 h-px bg-theme-400" />
-                    <span className="text-theme-600 font-bold uppercase tracking-[0.4em] text-[9px] md:text-[11px]">Good to Know</span>
+                    <span className="text-theme-600 font-bold uppercase tracking-[0.4em] text-[9px] md:text-[11px]">{t.goodToKnow}</span>
                     <div className="w-8 h-px bg-theme-400" />
                   </div>
-                  <h2 className="font-playball text-[2.6rem] sm:text-[4rem] md:text-[5.5rem] text-theme-900 leading-[1.1] drop-shadow-sm">
-                    Questions & Answers
+                  <h2 className="font-script text-[2.6rem] sm:text-[4rem] md:text-[5.5rem] text-theme-900 leading-[1.1] drop-shadow-sm">
+                    {t.faqTitle}
                   </h2>
                 </motion.div>
 
                 <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-                  {faqItems.map((item, i) => (
+                  {t.faq.map((item, i) => (
                     <motion.div
                       key={item.question}
                       initial={scrollInit({ opacity: 0, y: 20 })}
@@ -1168,7 +1200,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       <div className="relative z-10 space-y-4">
                         <div className="flex items-center gap-3">
                           <span className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
-                          <h3 className="font-cinzel text-base md:text-lg text-navy-800 font-bold tracking-wide leading-snug">{item.question}</h3>
+                          <h3 className="font-serif text-base md:text-lg text-navy-800 font-bold tracking-wide leading-snug">{item.question}</h3>
                         </div>
                         <p className="text-stone-500 text-sm md:text-base font-light leading-relaxed tracking-wide">{item.answer}</p>
                       </div>
@@ -1182,7 +1214,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             <div className="relative bg-[#ffffff]">
               <div className="absolute inset-0 opacity-[0.03] paper-grain pointer-events-none" />
 
-              <section className="cv-auto py-24 md:py-36 relative flex flex-col items-center overflow-hidden">
+              <section className="cv-auto py-14 md:py-24 relative flex flex-col items-center overflow-hidden">
                 <InviteImage src="/images/left - Copy.png" alt="" className="absolute -right-2 top-2 w-[160px] md:w-[220px] h-auto opacity-100 object-contain pointer-events-none z-20" loading="eager" />
                 <div className="container mx-auto px-4 max-w-4xl text-center relative z-10 w-full">
                   <motion.div
@@ -1195,11 +1227,11 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       <Sparkles className="w-8 h-8 text-theme-500" />
                     </div>
 
-                    <h2 className="font-playball text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-theme-800 mb-6 drop-shadow-sm leading-none">Best Wishes</h2>
+                    <h2 className="font-script text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-theme-800 mb-6 drop-shadow-sm leading-none">{t.bestWishes}</h2>
                     <div className="h-px w-24 bg-gradient-to-r from-transparent via-theme-400 to-transparent mb-8" />
 
-                    <p className="text-stone-500 text-sm md:text-lg leading-relaxed max-w-xl mx-auto mb-16 font-light tracking-wide px-4">
-                      Your presence at our wedding is the greatest gift of all. However, if you wish to honor us with a message, we would be delighted to read it!
+                    <p className="text-stone-500 text-sm md:text-lg leading-relaxed max-w-xl mx-auto mb-10 font-light tracking-wide px-4">
+                      {t.wishesIntro}
                     </p>
 
                     {/* Premium Wishing Form */}
@@ -1212,36 +1244,36 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-theme-50 mb-4 border border-theme-100">
                             <Sparkles className="w-8 h-8 text-theme-500" />
                           </div>
-                          <h3 className="font-playball text-4xl text-theme-800">Thank You!</h3>
-                          <p className="text-stone-500 font-light text-lg">Your beautiful message has been received.</p>
+                          <h3 className="font-script text-4xl text-theme-800">{t.thankYou}</h3>
+                          <p className="text-stone-500 font-light text-lg">{t.wishReceived}</p>
                         </div>
                       ) : (
                       <form className="space-y-8 text-left relative z-10" onSubmit={handleWishSubmit}>
                         <div className="space-y-3">
-                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Name</label>
+                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">{t.yourName}</label>
                           <input
                             type="text"
                             value={wishData["Your Name"]}
                             onChange={(e) => setWishData(prev => ({ ...prev, "Your Name": e.target.value }))}
-                            placeholder="John Doe"
+                            placeholder={t.yourNamePlaceholder}
                             required
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide rounded-t-lg"
+                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-serif text-lg tracking-wide rounded-t-lg"
                           />
                         </div>
                         <div className="space-y-3">
-                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Message</label>
+                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">{t.yourMessage}</label>
                           <textarea
                             rows={4}
                             value={wishData["Your Message"]}
                             onChange={(e) => setWishData(prev => ({ ...prev, "Your Message": e.target.value }))}
-                            placeholder="Wishing you a lifetime of happiness..."
+                            placeholder={t.messagePlaceholder}
                             required
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide resize-none rounded-t-lg"
+                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-serif text-lg tracking-wide resize-none rounded-t-lg"
                           />
                         </div>
                         <div className="pt-6 flex flex-col justify-center items-center">
                           {wishStatus === "error" && (
-                            <p className="text-red-500 text-xs text-center mb-4">Something went wrong. Please try again.</p>
+                            <p className="text-red-500 text-xs text-center mb-4">{t.errorMessage}</p>
                           )}
                           <button 
                             type="submit"
@@ -1249,7 +1281,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                             className="bg-navy-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-navy-900 hover:shadow-xl hover:shadow-navy-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4 disabled:opacity-70"
                           >
                             <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                            {wishStatus === "submitting" ? "Sending..." : "Send Wishes"}
+                            {wishStatus === "submitting" ? t.sending : t.sendWishes}
                             <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
                           </button>
                         </div>
@@ -1257,12 +1289,12 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       )}
                     </div>
 
-                    <div className="mt-32 md:mt-48 space-y-6 flex flex-col items-center relative w-full">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-playball text-[22vw] md:text-[220px] text-theme-100/40 whitespace-nowrap pointer-events-none z-0 select-none">
-                        Thank You
+                    <div className="mt-16 md:mt-24 space-y-6 flex flex-col items-center relative w-full">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-script text-[22vw] md:text-[220px] text-theme-100/40 whitespace-nowrap pointer-events-none z-0 select-none">
+                        {t.thankYouWatermark}
                       </div>
-                      <p className="text-[9px] md:text-[11px] uppercase tracking-[0.8em] text-theme-600 font-bold relative z-10 bg-[#ffffff] px-6 py-2 rounded-full border border-theme-100/50 shadow-sm">With Love</p>
-                      <h3 className="font-playball text-[3.2rem] sm:text-6xl md:text-8xl text-theme-900 relative z-10 drop-shadow-sm px-4 pt-4 leading-none">Brandon & Christina</h3>
+                      <p className="text-[9px] md:text-[11px] uppercase tracking-[0.8em] text-theme-600 font-bold relative z-10 bg-[#ffffff] px-6 py-2 rounded-full border border-theme-100/50 shadow-sm">{t.withLove}</p>
+                      <h3 className="font-script text-[3.2rem] sm:text-6xl md:text-8xl text-theme-900 relative z-10 drop-shadow-sm px-4 pt-4 leading-none">{t.couple}</h3>
 
                     </div>
                   </motion.div>
@@ -1272,10 +1304,10 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
               {/* Footer */}
               <footer className="py-12 border-t border-theme-200/30 text-center relative z-10 space-y-4 px-4">
                 <p className="text-[8px] md:text-[10px] uppercase tracking-[0.5em] text-stone-400 font-bold">
-                  © 2026 Brandon & Christina. <span className="hidden md:inline">|</span><br className="md:hidden block mt-2" /> All rights reserved.
+                  © 2026 Brandon & Christina. <span className="hidden md:inline">|</span><br className="md:hidden block mt-2" /> {t.allRightsReserved}
                 </p>
                 <p className="text-stone-500 text-[9px] md:text-[10px] mt-2 font-sans tracking-widest uppercase">
-                  Want a beautiful wedding website like this? <br className="md:hidden block mt-1" /> Create yours with <a target="_blank" rel="noreferrer" className="text-theme-600 hover:text-theme-800 underline font-bold transition-colors" href="https://wa.me/94707819074">invitemint</a>
+                  {t.wantWebsite} <br className="md:hidden block mt-1" /> {t.createYoursWith} <a target="_blank" rel="noreferrer" className="text-theme-600 hover:text-theme-800 underline font-bold transition-colors" href="https://wa.me/94707819074">invitemint</a>
                 </p>
               </footer>
             </div>
@@ -1309,5 +1341,6 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
         }
       `}} />
     </main>
+    </LangContext.Provider>
   );
 }

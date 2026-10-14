@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Frutilla Script";
+  src: url("/frutilla_script/Frutilla%20Script.otf") format("opentype"),
+    url("/frutilla_script/Frutilla%20Script.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  /* Frutilla draws small for its em size; enlarge it everywhere it is used */
+  size-adjust: 135%;
+}
+
 @theme {
-  --font-serif: "Cormorant Garamond", serif;
-  --font-script: "Great Vibes", cursive;
-  --font-sans: "Inter", sans-serif;
-  --font-cinzel: "Cinzel", serif;
-  --font-montserrat: "Montserrat", sans-serif;
-  --font-playball: "Playball", cursive;
+  --font-serif: "Cormorant Garamond", "Abhaya Libre", serif;
+  --font-script: "Frutilla Script", "Abhaya Libre", cursive;
+  --font-sans: "Montserrat", "Noto Sans Sinhala", sans-serif;
+  --font-montserrat: "Montserrat", "Noto Sans Sinhala", sans-serif;
 
   --color-sage: #c27486;
   --color-paper: #ffffff;
@@ -25,6 +34,10 @@
   --color-navy-700: #2a3d66;
   --color-navy-800: #1b2a4a;
   --color-navy-900: #121d36;
+
+  --color-gold-400: #c9a96e;
+  --color-gold-500: #b08d57;
+  --color-gold-600: #8f6f3e;
 }
 
 :root {
@@ -293,6 +306,71 @@ img[src*="mandala_gold.png"] {
   .envelope-petal,
   .envelope-sparkle,
   .envelope-hint {
+    animation: none;
+  }
+}
+
+/* Sinhala: wide letter-spacing breaks conjuncts and tiny caps labels become unreadable */
+[lang="si"] [class*="tracking-"] {
+  letter-spacing: 0.02em !important;
+}
+
+[lang="si"] [class*="text-[5px]"],
+[lang="si"] [class*="text-[6px]"],
+[lang="si"] [class*="text-[7px]"],
+[lang="si"] [class*="text-[8px]"],
+[lang="si"] [class*="text-[9px]"] {
+  font-size: 11px !important;
+}
+
+[lang="si"] .font-script {
+  font-family: "Abhaya Libre", serif;
+  font-weight: 600;
+}
+
+/* Hero reveal: runs once the envelope opens (CSS, so it works on iOS too) */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hero-ring-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes hero-scroll-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+.hero-in {
+  opacity: 0;
+  animation: hero-fade-up 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.hero-ring {
+  animation: hero-ring-spin 40s linear infinite;
+}
+
+.hero-scroll-cue {
+  animation: hero-scroll-cue 2s ease-in-out infinite;
+}
+
+.hero-names {
+  background: linear-gradient(180deg, #8a2c43 0%, #5c1a2b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-in {
+    opacity: 1;
+    animation: none;
+  }
+
+  .hero-ring,
+  .hero-scroll-cue {
     animation: none;
   }
 }
