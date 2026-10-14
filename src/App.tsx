@@ -597,7 +597,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
     >
       <audio
         ref={backgroundMusicRef}
-        src="/Christina_Perri_-_Thousand_years_(mp3.pm)%20(7).mp3"
+        src="/Dreams%20Come%20True%20-%20Dylan%20Carwyn%20Romantic%20Wedding%20Song%202025%20(Lyrics)%20-%20Dazzling%20Tunes%20(128k).mp3"
         loop
         preload="auto"
         aria-label="Background music"
