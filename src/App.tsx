@@ -882,7 +882,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
             </section>
 
             {/* Venue Location Section */}
-            <section className="cv-auto py-14 md:py-24 bg-[#ffffff] relative overflow-hidden">
+            <section className="cv-auto pt-24 pb-14 md:py-24 bg-[#ffffff] relative overflow-hidden">
               {/* Decorative Background */}
               <div className="absolute inset-0 opacity-5 paper-grain pointer-events-none" />
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-theme-200 blur-[150px] rounded-full opacity-20 pointer-events-none decorative-blur hidden md:block" />

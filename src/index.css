@@ -326,6 +326,8 @@ img[src*="mandala_gold.png"] {
   .text-base { font-size: 18px; }
   .text-lg { font-size: 20px; }
   .text-xl { font-size: 22px; }
+  /* Cormorant's 300 weight is too faint on small screens */
+  .font-light { font-weight: 400; }
 }
 
 /* Hero reveal: runs once the envelope opens (CSS, so it works on iOS too) */
