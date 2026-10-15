@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, type TargetAndTransition } from "framer-motion";
-import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX, Languages, ChevronDown } from "lucide-react";
-import { attendanceOptions, guestOptions, loadLang, saveLang, translations, type Lang, type Strings } from "./i18n";
+import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX, ChevronDown } from "lucide-react";
+import { attendanceOptions, guestOptions, strings as t } from "./i18n";
 
 /**
  * Premium Sri Lankan Wedding Invitation Theme
@@ -43,32 +43,6 @@ const safeViewport = {
 
 
 const mandalaImage = "/images/mandala_gold.png";
-
-const LangContext = createContext<Strings>(translations.en);
-const useStrings = () => useContext(LangContext);
-
-/** Top-right switch between English and Sinhala */
-function LangToggle({ lang, onToggle, className = "" }: { lang: Lang; onToggle: () => void; className?: string }) {
-  const t = useStrings();
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label={t.langToggleLabel}
-      aria-pressed={lang === "si"}
-      lang={lang === "en" ? "si" : "en"}
-      className={`z-30 inline-flex items-center gap-1 rounded-full border border-theme-200 bg-white/90 p-1 text-xs font-semibold text-theme-800 shadow-md backdrop-blur-sm transition hover:bg-white hover:scale-105 ${className}`}
-    >
-      <Languages className="mx-1 h-4 w-4" />
-      <span className={`rounded-full px-2 py-1 transition ${lang === "en" ? "bg-theme-700 text-white" : ""}`}>
-        English
-      </span>
-      <span className={`rounded-full px-2 py-1 transition ${lang === "si" ? "bg-theme-700 text-white" : ""}`}>
-        සිංහල
-      </span>
-    </button>
-  );
-}
 
 type InviteImageProps = React.ComponentProps<"img"> & {
   eager?: boolean;
@@ -233,8 +207,7 @@ function FloatingPetals({ disabled = false }: { disabled?: boolean }) {
 const envelopeImage ="/images/envelope_burgundy.png";
 
 /** Opening screen: guest taps the envelope to reveal the invitation */
-function EnvelopeIntro({ onOpen, lang, onToggleLang }: { onOpen: () => void; lang: Lang; onToggleLang: () => void }) {
-  const t = useStrings();
+function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
   const [sparkles] = useState(() =>
     Array.from({ length: 18 }).map((_, i) => ({
       id: i,
@@ -309,7 +282,6 @@ function EnvelopeIntro({ onOpen, lang, onToggleLang }: { onOpen: () => void; lan
         ))}
       </div>
 
-      <LangToggle lang={lang} onToggle={onToggleLang} className="absolute right-4 top-4" />
       <div className="relative z-20 flex min-h-[100dvh] flex-col items-center justify-center px-6">
         <motion.div
           initial={scrollInit({ opacity: 0, y: -20 })}
@@ -358,7 +330,6 @@ function EnvelopeIntro({ onOpen, lang, onToggleLang }: { onOpen: () => void; lan
 }
 
 function CountdownTimer() {
-  const t = useStrings();
   const targetDate = new Date("December 18, 2026 17:00:00").getTime();
   const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
 
@@ -426,8 +397,6 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
   const backgroundMusicRef = useRef<HTMLAudioElement>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
-  const [lang, setLang] = useState<Lang>(loadLang);
-  const t = translations[lang];
   const [heroSparkles] = useState(() =>
     Array.from({ length: 14 }).map((_, i) => ({
       id: i,
@@ -437,12 +406,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
       delay: Math.random() * 4,
     })),
   );
-  const toggleLang = () => setLang((prev) => (prev === "en" ? "si" : "en"));
 
-  useEffect(() => {
-    saveLang(lang);
-    document.documentElement.lang = lang;
-  }, [lang]);
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(() =>
     typeof window !== "undefined" ? detectLiteExperience() : false,
   );
@@ -590,9 +554,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
   };
 
   return (
-    <LangContext.Provider value={t}>
     <main
-      lang={lang}
       className={`h-[100dvh] w-full bg-[#ffffff] overflow-y-auto overflow-x-hidden relative font-montserrat smooth-mobile-scroll ${preferLiteExperience ? "mobile-lite ios-scroll-stable" : "scroll-smooth"}`}
     >
       <audio
@@ -612,7 +574,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
         {isMusicPlaying ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
       </button>
       <AnimatePresence>
-        {!isEnvelopeOpen && <EnvelopeIntro onOpen={() => setIsEnvelopeOpen(true)} lang={lang} onToggleLang={toggleLang} />}
+        {!isEnvelopeOpen && <EnvelopeIntro onOpen={() => setIsEnvelopeOpen(true)} />}
       </AnimatePresence>
       <FloatingPetals disabled={isLowPerformanceMode || !isEnvelopeOpen} />
 
@@ -625,7 +587,6 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
 
             {/* Hero Section */}
             <section className="min-h-[100dvh] w-full flex items-center justify-center relative overflow-hidden bg-[#fdf9f3]">
-              <LangToggle lang={lang} onToggle={toggleLang} className="absolute right-4 top-4" />
               <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: "url('/Elegant%20Watercolor%20Floral%20Arch%20Invitation.png')" }}
@@ -650,7 +611,6 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
               </div>
 
               <div
-                key={`hero-${lang}`}
                 className="relative z-10 w-full max-w-[560px] min-h-[100dvh] flex flex-col items-center justify-center text-center px-14 py-20 md:py-24"
               >
                 <p
@@ -767,11 +727,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                           {t.toCelebrate}
                         </>
                       ) : (
-                        lang === "en" ? (
                         <>{t.requestHonourOfYourPresence}<br className="hidden md:block" /> {t.toCelebrate}</>
-                      ) : (
-                        t.requestHonourOfYourPresence
-                      )
                       )}
                     </p>
                   </div>
@@ -911,7 +867,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   </div>
 
                   <h2 className="font-serif text-3xl md:text-5xl text-theme-900 mb-8 relative z-10 tracking-widest font-bold drop-shadow-sm px-4 leading-[1.4]">
-                    {t.waitForThe} <span className="font-script text-theme-700 italic lowercase tracking-normal text-4xl md:text-7xl ml-2">{t.magic}</span>
+                    {t.waitForThe} <span className="font-magic font-normal text-theme-700 lowercase tracking-normal text-5xl md:text-7xl ml-2">{t.magic}</span>
                   </h2>
 
                   <p className="text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-theme-600 font-bold bg-white/95 md:bg-white/80 md:backdrop-blur-sm px-8 py-3 rounded-full border border-theme-200/50 inline-flex items-center gap-3 shadow-[0_4px_15px_-5px_rgba(0,0,0,0.05)] relative z-10">
@@ -1341,6 +1297,5 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
         }
       `}} />
     </main>
-    </LangContext.Provider>
   );
 }

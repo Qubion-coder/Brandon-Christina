@@ -12,10 +12,11 @@
 }
 
 @theme {
-  --font-serif: "Cormorant Garamond", "Abhaya Libre", serif;
-  --font-script: "Frutilla Script", "Abhaya Libre", cursive;
-  --font-sans: "Montserrat", "Noto Sans Sinhala", sans-serif;
-  --font-montserrat: "Montserrat", "Noto Sans Sinhala", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  --font-script: "Frutilla Script", cursive;
+  --font-magic: "Great Vibes", cursive;
+  --font-sans: "Cormorant Garamond", serif;
+  --font-montserrat: "Cormorant Garamond", serif;
 
   --color-sage: #c27486;
   --color-paper: #ffffff;
@@ -310,22 +311,21 @@ img[src*="mandala_gold.png"] {
   }
 }
 
-/* Sinhala: wide letter-spacing breaks conjuncts and tiny caps labels become unreadable */
-[lang="si"] [class*="tracking-"] {
-  letter-spacing: 0.02em !important;
-}
-
-[lang="si"] [class*="text-[5px]"],
-[lang="si"] [class*="text-[6px]"],
-[lang="si"] [class*="text-[7px]"],
-[lang="si"] [class*="text-[8px]"],
-[lang="si"] [class*="text-[9px]"] {
-  font-size: 11px !important;
-}
-
-[lang="si"] .font-script {
-  font-family: "Abhaya Libre", serif;
-  font-weight: 600;
+/* Mobile readability: Cormorant Garamond runs small, so lift every small size on phones */
+@media (max-width: 767px) {
+  .text-\[5px\],
+  .text-\[6px\] { font-size: 9px; letter-spacing: 0.12em; }
+  .text-\[7px\],
+  .text-\[8px\] { font-size: 12px; }
+  .text-\[9px\],
+  .text-\[10px\] { font-size: 13px; }
+  .text-\[11px\],
+  .text-\[12px\] { font-size: 14px; }
+  .text-xs { font-size: 15px; }
+  .text-sm { font-size: 17px; }
+  .text-base { font-size: 18px; }
+  .text-lg { font-size: 20px; }
+  .text-xl { font-size: 22px; }
 }
 
 /* Hero reveal: runs once the envelope opens (CSS, so it works on iOS too) */
