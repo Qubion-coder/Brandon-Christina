@@ -294,7 +294,7 @@ function EnvelopeIntro({ onOpen }: { onOpen: () => void }) {
             <p className="text-[9px] md:text-[11px] uppercase tracking-[0.5em] text-theme-700 font-bold">{t.envelopeTitle}</p>
             <span className="h-px w-12 bg-gradient-to-l from-transparent to-theme-400/70" />
           </div>
-          <h1 className="font-script text-4xl md:text-6xl tracking-[0.05em] text-theme-800">
+          <h1 className="font-serif uppercase font-normal text-[32px] md:text-5xl leading-[1.2] tracking-[0.12em] text-theme-800">
             {t.groom} <span className="text-navy-800">{t.ampersand}</span> {t.bride}
           </h1>
         </motion.div>
@@ -373,7 +373,7 @@ function CountdownTimer() {
             <div className="absolute inset-1.5 sm:inset-2 md:inset-3 border-[0.5px] border-theme-300/50 rounded-t-full pointer-events-none" />
 
             {/* The Number */}
-            <span className="text-2xl sm:text-3xl md:text-5xl font-script text-theme-800 leading-none relative z-10 drop-shadow-sm mt-3 sm:mt-4 md:mt-6 transition-transform duration-500 group-hover:scale-110">
+            <span className="text-2xl sm:text-3xl md:text-5xl font-serif text-theme-800 leading-none relative z-10 drop-shadow-sm mt-3 sm:mt-4 md:mt-6 transition-transform duration-500 group-hover:scale-110">
               {Math.max(0, stat.value).toString().padStart(2, '0')}
             </span>
 
@@ -620,10 +620,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   {t.pleaseJoinUs}
                 </p>
 
-                {/* Names, offset for a hand-lettered feel */}
-                <h1 className="flex w-full flex-col font-script leading-none">
+                <h1 className="mt-8 flex w-full flex-col items-center font-serif uppercase font-normal leading-none tracking-[0.1em]">
                   <span
-                    className={`hero-names block self-start text-[3.4rem] sm:text-[4rem] md:text-[5.5rem] ${isEnvelopeOpen ? "hero-in" : ""}`}
+                    className={`hero-names block text-[38px] sm:text-[44px] md:text-[60px] ${isEnvelopeOpen ? "hero-in" : ""}`}
                     style={{ animationDelay: "0.6s" }}
                   >
                     {t.groom}
@@ -633,11 +632,11 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     style={{ animationDelay: "0.8s" }}
                   >
                     <span className="h-px w-10 bg-gradient-to-r from-transparent to-gold-400" />
-                    <span className="text-3xl md:text-4xl text-gold-500">{t.ampersand}</span>
+                    <span className="italic normal-case tracking-normal text-3xl md:text-4xl text-gold-500">{t.ampersand}</span>
                     <span className="h-px w-10 bg-gradient-to-l from-transparent to-gold-400" />
                   </span>
                   <span
-                    className={`hero-names block self-end text-[3.4rem] sm:text-[4rem] md:text-[5.5rem] ${isEnvelopeOpen ? "hero-in" : ""}`}
+                    className={`hero-names block text-[38px] sm:text-[44px] md:text-[60px] ${isEnvelopeOpen ? "hero-in" : ""}`}
                     style={{ animationDelay: "1s" }}
                   >
                     {t.bride}
@@ -712,16 +711,16 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                 >
                   <div className="w-px h-10 md:h-16 bg-gradient-to-b from-transparent to-theme-400 mb-4 md:mb-8" />
                   <div className="bg-white/95 md:bg-transparent md:backdrop-blur-none px-6 py-3 md:p-0 rounded-2xl md:rounded-none shadow-[0_4px_20px_rgba(255,255,255,0.8)] md:shadow-none border border-white/60 md:border-none relative z-10">
-                    <p className="font-serif text-navy-800 text-sm md:text-xl tracking-[0.15em] md:tracking-[0.2em] font-bold text-center leading-relaxed mb-4 md:mb-6">
+                    <p className="font-serif uppercase text-navy-800 text-sm md:text-xl tracking-[0.15em] md:tracking-[0.2em] font-bold text-center leading-relaxed mb-4 md:mb-6">
                       {t.groomParents}
-                      <span className="block font-script text-theme-500 text-xl md:text-3xl font-normal tracking-normal my-1">{t.ampersand}</span>
+                      <span className="block font-serif italic text-theme-500 text-xl md:text-3xl font-normal tracking-normal my-1">{t.ampersand}</span>
                       {t.brideParents}
                     </p>
                     <p className="text-theme-700 text-[9px] md:text-[12px] tracking-[0.4em] md:tracking-[0.6em] uppercase font-bold text-center leading-loose">
                       {guestName ? (
                         <>
                           {t.requestHonourOfPresenceOf}
-                          <span className="block font-script text-[1.8rem] md:text-5xl text-theme-800 normal-case tracking-normal my-4 font-normal drop-shadow-sm">
+                          <span className="block font-serif uppercase text-[28px] md:text-5xl text-theme-800 tracking-[0.1em] my-4 font-normal">
                             {guestName}
                           </span>
                           {t.toCelebrate}
@@ -747,9 +746,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <div className="relative z-10 space-y-3 py-4 md:py-8">
                       <div className="space-y-2">
                         <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">{t.belovedSonOf}</p>
-                        <p className="text-xs md:text-sm font-serif text-stone-600 tracking-wide leading-relaxed">{t.groomParents}</p>
+                        <p className="text-xs md:text-sm font-serif uppercase text-stone-600 tracking-wide leading-relaxed">{t.groomParents}</p>
                       </div>
-                      <h3 className="text-5xl md:text-7xl font-script text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">{t.groom}</h3>
+                      <h3 className="font-serif uppercase font-normal text-[36px] md:text-[52px] tracking-[0.12em] text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6">{t.groom}</h3>
                     </div>
                   </motion.div>
 
@@ -763,7 +762,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
                       className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-theme-500 to-theme-700 rounded-full flex items-center justify-center shadow-xl shadow-theme-900/20 border-4 border-[#ffffff]"
                     >
-                      <span className="text-3xl md:text-5xl font-script text-white md:-mt-1 drop-shadow-md">&</span>
+                      <span className="text-3xl md:text-5xl font-serif italic text-white md:-mt-1 drop-shadow-md">&</span>
                     </motion.div>
                     <div className="hidden md:block w-px h-32 bg-gradient-to-b from-theme-300 to-transparent" />
                   </div>
@@ -781,9 +780,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <div className="relative z-10 space-y-3 py-4 md:py-8">
                       <div className="space-y-2">
                         <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">{t.belovedDaughterOf}</p>
-                        <p className="text-xs md:text-sm font-serif text-stone-600 tracking-wide leading-relaxed">{t.brideParents}</p>
+                        <p className="text-xs md:text-sm font-serif uppercase text-stone-600 tracking-wide leading-relaxed">{t.brideParents}</p>
                       </div>
-                      <h3 className="text-5xl md:text-7xl font-script text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">{t.bride}</h3>
+                      <h3 className="font-serif uppercase font-normal text-[36px] md:text-[52px] tracking-[0.12em] text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6">{t.bride}</h3>
                     </div>
                   </motion.div>
                 </div>
@@ -856,7 +855,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   className="relative w-full flex flex-col items-center"
                 >
                   {/* Watermark text */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-script text-[12vw] md:text-[140px] text-theme-100/50 whitespace-nowrap pointer-events-none z-0 select-none">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif uppercase tracking-[0.15em] text-[16vw] md:text-[140px] text-theme-100/50 whitespace-nowrap pointer-events-none z-0 select-none">
                     {t.forever}
                   </div>
 
@@ -866,8 +865,8 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <div className="h-px w-16 md:w-32 bg-gradient-to-l from-transparent to-theme-400" />
                   </div>
 
-                  <h2 className="font-serif text-3xl md:text-5xl text-theme-900 mb-8 relative z-10 tracking-widest font-bold drop-shadow-sm px-4 leading-[1.4]">
-                    {t.waitForThe} <span className="font-magic font-normal text-theme-700 lowercase tracking-normal text-5xl md:text-7xl ml-2">{t.magic}</span>
+                  <h2 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-theme-900 mb-8 relative z-10 px-4">
+                    {t.waitForThe} <span className="italic text-theme-700">{t.magic}</span>
                   </h2>
 
                   <p className="text-[10px] md:text-[11px] uppercase tracking-[0.5em] text-theme-600 font-bold bg-white/95 md:bg-white/80 md:backdrop-blur-sm px-8 py-3 rounded-full border border-theme-200/50 inline-flex items-center gap-3 shadow-[0_4px_15px_-5px_rgba(0,0,0,0.05)] relative z-10">
@@ -914,7 +913,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                         <div className="w-8 h-px bg-theme-400" />
                         <span className="text-theme-600 font-bold uppercase tracking-[0.4em] text-[9px] md:text-[11px]">{t.theVenue}</span>
                       </div>
-                      <h2 className="font-script text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-theme-900 leading-[1] drop-shadow-sm ml-[-4px]">
+                      <h2 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-theme-900">
                         {t.venueName}
                       </h2>
                     </div>
@@ -926,12 +925,12 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                         <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm border border-theme-100 absolute -left-5 top-0">
                           <MapPin className="w-4 h-4 text-theme-500" />
                         </div>
-                        <p className="text-lg md:text-xl text-stone-700 font-serif font-medium leading-relaxed tracking-wide">
+                        <p className="text-lg md:text-xl text-stone-700 font-serif uppercase font-medium leading-relaxed tracking-wide">
                           {t.venueAddress[0]}<br /> {t.venueAddress[1]}
                         </p>
                       </div>
 
-                      <div className="pl-8 space-y-4 pt-4 text-stone-500 text-sm md:text-base tracking-wide font-light leading-relaxed">
+                      <div className="pl-8 space-y-4 pt-4 uppercase text-stone-500 text-sm md:text-base tracking-wide font-light leading-relaxed">
                         {t.venueDescription}
                       </div>
                     </div>
@@ -988,7 +987,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                   className="flex flex-col items-center"
                 >
                   <p className="text-[10px] md:text-[12px] uppercase tracking-[0.5em] md:tracking-[0.8em] text-theme-300 font-bold mb-6">{t.willYouJoinUs}</p>
-                  <h2 className="font-script text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-white mb-6 drop-shadow-md">{t.rsvpTitle}</h2>
+                  <h2 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-white mb-6">{t.rsvpTitle}</h2>
                   <div className="flex items-center gap-4 justify-center w-full mb-8 opacity-60">
                     <div className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-theme-300" />
                     <div className="w-1.5 h-1.5 rotate-45 bg-white" />
@@ -1020,7 +1019,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
                         </div>
-                        <h3 className="font-script text-3xl text-white">{t.thankYou}</h3>
+                        <h3 className="font-serif uppercase text-[28px] tracking-[0.12em] text-white">{t.thankYou}</h3>
                         <p className="text-stone-300 font-light">{t.rsvpReceived}</p>
                       </div>
                     ) : (
@@ -1137,7 +1136,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     <span className="text-theme-600 font-bold uppercase tracking-[0.4em] text-[9px] md:text-[11px]">{t.goodToKnow}</span>
                     <div className="w-8 h-px bg-theme-400" />
                   </div>
-                  <h2 className="font-script text-[2.6rem] sm:text-[4rem] md:text-[5.5rem] text-theme-900 leading-[1.1] drop-shadow-sm">
+                  <h2 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-theme-900">
                     {t.faqTitle}
                   </h2>
                 </motion.div>
@@ -1156,9 +1155,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       <div className="relative z-10 space-y-4">
                         <div className="flex items-center gap-3">
                           <span className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
-                          <h3 className="font-serif text-base md:text-lg text-navy-800 font-bold tracking-wide leading-snug">{item.question}</h3>
+                          <h3 className="font-serif uppercase text-base md:text-lg text-navy-800 font-bold tracking-wide leading-snug">{item.question}</h3>
                         </div>
-                        <p className="text-stone-500 text-sm md:text-base font-light leading-relaxed tracking-wide">{item.answer}</p>
+                        <p className="font-serif text-stone-600 text-base md:text-lg font-normal leading-relaxed">{item.answer}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -1183,7 +1182,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                       <Sparkles className="w-8 h-8 text-theme-500" />
                     </div>
 
-                    <h2 className="font-script text-[3.5rem] sm:text-[4rem] md:text-[5.5rem] text-theme-800 mb-6 drop-shadow-sm leading-none">{t.bestWishes}</h2>
+                    <h2 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-theme-800 mb-6">{t.bestWishes}</h2>
                     <div className="h-px w-24 bg-gradient-to-r from-transparent via-theme-400 to-transparent mb-8" />
 
                     <p className="text-stone-500 text-sm md:text-lg leading-relaxed max-w-xl mx-auto mb-10 font-light tracking-wide px-4">
@@ -1200,7 +1199,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-theme-50 mb-4 border border-theme-100">
                             <Sparkles className="w-8 h-8 text-theme-500" />
                           </div>
-                          <h3 className="font-script text-4xl text-theme-800">{t.thankYou}</h3>
+                          <h3 className="font-serif uppercase text-[28px] tracking-[0.12em] text-theme-800">{t.thankYou}</h3>
                           <p className="text-stone-500 font-light text-lg">{t.wishReceived}</p>
                         </div>
                       ) : (
@@ -1246,11 +1245,11 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     </div>
 
                     <div className="mt-16 md:mt-24 space-y-6 flex flex-col items-center relative w-full">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-script text-[22vw] md:text-[220px] text-theme-100/40 whitespace-nowrap pointer-events-none z-0 select-none">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif uppercase tracking-[0.1em] text-[18vw] md:text-[180px] text-theme-100/40 whitespace-nowrap pointer-events-none z-0 select-none">
                         {t.thankYouWatermark}
                       </div>
                       <p className="text-[9px] md:text-[11px] uppercase tracking-[0.8em] text-theme-600 font-bold relative z-10 bg-[#ffffff] px-6 py-2 rounded-full border border-theme-100/50 shadow-sm">{t.withLove}</p>
-                      <h3 className="font-script text-[3.2rem] sm:text-6xl md:text-8xl text-theme-900 relative z-10 drop-shadow-sm px-4 pt-4 leading-none">{t.couple}</h3>
+                      <h3 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-theme-900 relative z-10 px-4 pt-4">{t.couple}</h3>
 
                     </div>
                   </motion.div>

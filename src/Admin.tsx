@@ -62,7 +62,7 @@ export default function Admin() {
         
         <div className="relative z-10 space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl md:text-4xl font-script text-theme-800">Brandon & Christina</h1>
+            <h1 className="text-3xl md:text-4xl font-serif uppercase tracking-[0.12em] text-theme-800">Brandon & Christina</h1>
             <p className="text-xs uppercase tracking-[0.3em] font-bold text-stone-400">Wedding Link Generator</p>
           </div>
           

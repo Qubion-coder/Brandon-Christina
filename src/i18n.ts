@@ -63,7 +63,7 @@ export const strings = {
   willYouJoinUs: "Will You Join Us?",
   rsvpTitle: "RSVP",
   rsvpIntro: "We would be absolutely thrilled to celebrate with you. Kindly confirm your presence using the form below.",
-  rsvpBy: "RSVP by 20 November 2026",
+  rsvpBy: "RSVP before 2 December 2026",
   rsvpContactTitle: "For RSVP enquiries",
   rsvpContactBrandon: "Brandon",
   rsvpContactChristina: "Christina",
@@ -99,7 +99,7 @@ export const strings = {
     {
       question: "What's the RSVP deadline?",
       answer:
-        "Please RSVP by 20 November 2026 so we can confirm our guest count and make the necessary arrangements.",
+        "Please RSVP before 2 December 2026 so we can confirm our guest count and make the necessary arrangements.",
     },
     {
       question: "Can I bring a guest?",

@@ -1,20 +1,7 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Frutilla Script";
-  src: url("/frutilla_script/Frutilla%20Script.otf") format("opentype"),
-    url("/frutilla_script/Frutilla%20Script.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  /* Frutilla draws small for its em size; enlarge it everywhere it is used */
-  size-adjust: 135%;
-}
-
 @theme {
   --font-serif: "Cormorant Garamond", serif;
-  --font-script: "Frutilla Script", cursive;
-  --font-magic: "Great Vibes", cursive;
   --font-sans: "Cormorant Garamond", serif;
   --font-montserrat: "Cormorant Garamond", serif;
 
@@ -60,7 +47,7 @@ html, body {
 }
 
 .script {
-  font-family: var(--font-script);
+  font-family: var(--font-serif);
 }
 
 .clip-path-envelope {
