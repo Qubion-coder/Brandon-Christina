@@ -32,6 +32,8 @@
   background-color: var(--color-paper);
   color: #1b2a4a;
   font-family: var(--font-montserrat);
+  /* Cormorant defaults to old-style figures, which make digits like "2" look tiny */
+  font-variant-numeric: lining-nums;
 }
 
 html, body {

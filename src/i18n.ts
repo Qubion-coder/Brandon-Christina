@@ -118,14 +118,6 @@ export const strings = {
     },
   ],
 
-  bestWishes: "Best Wishes",
-  wishesIntro:
-    "Your presence at our wedding is the greatest gift of all. However, if you wish to honor us with a message, we would be delighted to read it!",
-  wishReceived: "Your beautiful message has been received.",
-  yourName: "Your Name",
-  yourNamePlaceholder: "John Doe",
-  yourMessage: "Your Message",
-  sendWishes: "Send Wishes",
   thankYouWatermark: "Thank You",
   withLove: "With Love",
 

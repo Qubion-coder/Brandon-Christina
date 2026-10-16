@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion, type TargetAndTransition } from "framer-motion";
-import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX, ChevronDown } from "lucide-react";
+import { MapPin, Calendar, Clock, Volume2, VolumeX, ChevronDown } from "lucide-react";
 import { attendanceOptions, guestOptions, strings as t } from "./i18n";
 
 /**
@@ -43,6 +43,10 @@ const safeViewport = {
 
 
 const mandalaImage = "/images/mandala_gold.png";
+
+/** Web app URL from deploying google-apps-script.js (Deploy > Web app) */
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbzy8gpNYgr3NJ3qY3ot0oH0cqisNWHTVCdg5N1IMpSwMDY8kTx1mXZqwaZkrElrQP5ZeQ/exec";
 
 type InviteImageProps = React.ComponentProps<"img"> & {
   eager?: boolean;
@@ -421,25 +425,13 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
   const isAttending = rsvpData["Attendance"] === "Joyfully accepts";
   const [rsvpStatus, setRsvpStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
-  const [wishData, setWishData] = useState({
-    "Your Name": guestName || "",
-    "Your Message": ""
-  });
-  const [wishStatus, setWishStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-
   const submitToGoogleSheets = async (sheetName: string, data: Record<string, string>) => {
-    const scriptUrl = "https://script.google.com/macros/s/AKfycbx8ro4tM7vnfgToXU-4ye4HiuEB_WYrxFJQaMAC4WCNkHsRlLqVRdAybbeDvC8OPrIUVg/exec";
-    
-    if (!scriptUrl) {
-      console.warn("VITE_GOOGLE_SCRIPT_URL is missing. Simulating success.");
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return { status: "success" };
-    }
-    
+    const scriptUrl = GOOGLE_SCRIPT_URL;
+
     const formData = new URLSearchParams();
     formData.append("sheetName", sheetName);
     // Guests who decline have no party size or guest names to record
-    const finalData = { ...data };
+    const finalData: Record<string, string> = { ...data, "Invited As": guestName || "" };
     if (sheetName === "RSVP" && data["Attendance"] !== "Joyfully accepts") {
       finalData["Guests"] = "0";
       finalData["Guest Names"] = "";
@@ -455,7 +447,9 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
         },
       });
       if (!response.ok) throw new Error("Network error");
-      return await response.json();
+      const result = await response.json();
+      if (result.status !== "success") throw new Error(result.message || "Script error");
+      return result;
     } catch (error) {
       console.error("Submission error:", error);
       throw error;
@@ -472,19 +466,6 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
       setRsvpStatus("success");
     } catch {
       setRsvpStatus("error");
-    }
-  };
-
-  const handleWishSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!wishData["Your Name"].trim() || !wishData["Your Message"].trim()) return;
-    setWishStatus("submitting");
-    try {
-      await submitToGoogleSheets("Wish", wishData);
-      setWishStatus("success");
-      setWishData(prev => ({ ...prev, "Your Message": "" }));
-    } catch {
-      setWishStatus("error");
     }
   };
 
@@ -1165,7 +1146,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
               </div>
             </section>
 
-            {/* Wishing Section and Footer Wrapper */}
+            {/* Closing and Footer Wrapper */}
             <div className="relative bg-[#ffffff]">
               <div className="absolute inset-0 opacity-[0.03] paper-grain pointer-events-none" />
 
@@ -1178,73 +1159,7 @@ export default function WeddingInvitation({ guestName }: { guestName?: string | 
                     viewport={safeViewport}
                     className="flex flex-col items-center"
                   >
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-theme-100/50 mb-8 mt-4 shadow-sm border border-theme-200/50">
-                      <Sparkles className="w-8 h-8 text-theme-500" />
-                    </div>
-
-                    <h2 className="font-serif uppercase font-normal text-[36px] md:text-[52px] leading-[1.15] tracking-[0.12em] text-theme-800 mb-6">{t.bestWishes}</h2>
-                    <div className="h-px w-24 bg-gradient-to-r from-transparent via-theme-400 to-transparent mb-8" />
-
-                    <p className="text-stone-500 text-sm md:text-lg leading-relaxed max-w-xl mx-auto mb-10 font-light tracking-wide px-4">
-                      {t.wishesIntro}
-                    </p>
-
-                    {/* Premium Wishing Form */}
-                    <div className="w-full max-w-2xl mx-auto bg-white p-6 sm:p-8 md:p-14 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] border border-theme-100/50 rounded-tr-[4rem] rounded-bl-[4rem] relative group">
-                      {/* Decorative internal lines */}
-                      <div className="absolute inset-2 md:inset-4 border-[0.5px] border-theme-200/50 rounded-tr-[3.5rem] rounded-bl-[3.5rem] pointer-events-none transition-colors duration-700 group-hover:border-theme-300/80" />
-
-                      {wishStatus === "success" ? (
-                        <div className="text-center space-y-4 py-12 relative z-10 animate-in fade-in zoom-in duration-500">
-                          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-theme-50 mb-4 border border-theme-100">
-                            <Sparkles className="w-8 h-8 text-theme-500" />
-                          </div>
-                          <h3 className="font-serif uppercase text-[28px] tracking-[0.12em] text-theme-800">{t.thankYou}</h3>
-                          <p className="text-stone-500 font-light text-lg">{t.wishReceived}</p>
-                        </div>
-                      ) : (
-                      <form className="space-y-8 text-left relative z-10" onSubmit={handleWishSubmit}>
-                        <div className="space-y-3">
-                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">{t.yourName}</label>
-                          <input
-                            type="text"
-                            value={wishData["Your Name"]}
-                            onChange={(e) => setWishData(prev => ({ ...prev, "Your Name": e.target.value }))}
-                            placeholder={t.yourNamePlaceholder}
-                            required
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-serif text-lg tracking-wide rounded-t-lg"
-                          />
-                        </div>
-                        <div className="space-y-3">
-                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">{t.yourMessage}</label>
-                          <textarea
-                            rows={4}
-                            value={wishData["Your Message"]}
-                            onChange={(e) => setWishData(prev => ({ ...prev, "Your Message": e.target.value }))}
-                            placeholder={t.messagePlaceholder}
-                            required
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-serif text-lg tracking-wide resize-none rounded-t-lg"
-                          />
-                        </div>
-                        <div className="pt-6 flex flex-col justify-center items-center">
-                          {wishStatus === "error" && (
-                            <p className="text-red-500 text-xs text-center mb-4">{t.errorMessage}</p>
-                          )}
-                          <button 
-                            type="submit"
-                            disabled={wishStatus === "submitting"}
-                            className="bg-navy-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-navy-900 hover:shadow-xl hover:shadow-navy-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4 disabled:opacity-70"
-                          >
-                            <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                            {wishStatus === "submitting" ? t.sending : t.sendWishes}
-                            <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                          </button>
-                        </div>
-                      </form>
-                      )}
-                    </div>
-
-                    <div className="mt-16 md:mt-24 space-y-6 flex flex-col items-center relative w-full">
+                    <div className="mt-4 space-y-6 flex flex-col items-center relative w-full">
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-serif uppercase tracking-[0.1em] text-[18vw] md:text-[180px] text-theme-100/40 whitespace-nowrap pointer-events-none z-0 select-none">
                         {t.thankYouWatermark}
                       </div>
